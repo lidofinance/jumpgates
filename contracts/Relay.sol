@@ -44,6 +44,10 @@ contract Relay is Ownable {
     // to the `recipient` on the `recipientChain` chain
     // via the Wormhole Token Bridge;
     function bridgeTokens() public {
+        _callBridgeTransfer();
+    }
+
+    function _callBridgeTransfer() private {
         uint256 amount = token.balanceOf(address(this));
         token.approve(address(bridge), amount);
 
