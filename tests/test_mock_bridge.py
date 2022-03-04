@@ -10,10 +10,8 @@ from utils.encode import encode_terra_address
 from utils.network import is_dev
 
 
-def test_transfer_tokens():
-    deployer = get_account()
+def test_transfer_tokens(deployer, token):
     bridge = b.MockWormholeTokenBridge.deploy({"from": deployer})
-    token = b.MockERC20Token.deploy(to_wei(10**9, "ether"), {"from": deployer})
 
     amount = to_wei(10**9, "ether")
     recipient = encode_terra_address(TERRA_RANDOM_ADDRESS)
