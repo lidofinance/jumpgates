@@ -1,43 +1,38 @@
-from brownie import MockERC20, Relay, network
+from brownie import MockERC20Token, Relay
+from utils.account import get_account
 from utils.config import (
-    ldo,
-    wormhole_token_bridge,
+    ERC20_TOKEN_ADDRESS,
+    WORMHOLE_TOKEN_BRIDGE_ADDRESS,
     TERRA_WORMHOLE_CHAIN_ID,
     TERRA_RANDOM_ADDRESS,
 )
 from utils.encode import encode_terra_address
-from utils.contract import get_ldo_contract, get_wormhole_token_bridge_contract
+from utils.contract import get_wormhole_token_bridge_contract
 import pytest
 
 
 # Relay contract
 @pytest.fixture
-def relay(accounts, chain):
+def relay(deployer, chain):
     return Relay.deploy(
-        ldo.get(chain.id),
-        wormhole_token_bridge.get(chain.id),
+        ERC20_TOKEN_ADDRESS.get(chain.id),
+        WORMHOLE_TOKEN_BRIDGE_ADDRESS.get(chain.id),
         TERRA_WORMHOLE_CHAIN_ID,
         encode_terra_address(TERRA_RANDOM_ADDRESS),
         0,
-        {"from": accounts[0]},
+        {"from": deployer},
     )
 
 
-# some ERC20 token, e.g. LDO
 @pytest.fixture
-def token(accounts):
-    return MockERC20.deploy(10**9, {"from": accounts[0]})
-
-
-@pytest.fixture
-def bridge(chain, accounts):
+def bridge(chain):
     return get_wormhole_token_bridge_contract(chain.id)
 
 
 # should be deployed with specified parameters
-def test_relay_parameters(accounts, chain, relay):
-    assert relay.token() == ldo.get(chain.id)
-    assert relay.bridge() == wormhole_token_bridge.get(chain.id)
+def test_relay_parameters(chain, relay):
+    assert relay.token() == ERC20_TOKEN_ADDRESS.get(chain.id)
+    assert relay.bridge() == WORMHOLE_TOKEN_BRIDGE_ADDRESS.get(chain.id)
     assert relay.recipientChain() == TERRA_WORMHOLE_CHAIN_ID
     assert relay.recipient() == encode_terra_address(TERRA_RANDOM_ADDRESS)
     assert relay.arbiterFee() == 0
@@ -45,25 +40,14 @@ def test_relay_parameters(accounts, chain, relay):
 
 
 @pytest.mark.parametrize("transfer_amount", [0, 1000, 1000000])
-def test_token_balance(relay, token, chain, accounts, transfer_amount):
-    token.transfer(relay.address, transfer_amount, {"from": accounts[0]})
+def test_token_balance(relay, token, deployer, transfer_amount):
+    token.transfer(relay.address, transfer_amount, {"from": deployer})
     assert token.balanceOf(relay.address) == transfer_amount
 
 
-def test_bridge_transfer_tokens(token, bridge, accounts):
-    bridge.transferTokens(
-        token.address,
-        1000,
-        TERRA_WORMHOLE_CHAIN_ID,
-        encode_terra_address(TERRA_RANDOM_ADDRESS),
-        0,
-        0,
-        {"from": accounts[0]},
-    )
-    assert token.balanceOf(accounts[0]) == 10**9 - 1000
-
-
-def test_increment_nonce(relay, token, bridge, accounts):
-    token.transfer(relay.address, 1000, {"from": accounts[0]})
+def test_increment_nonce(relay, token, deployer):
+    tx = token.transfer(relay.address, 1000, {"from": deployer})
     relay.bridgeTokens()
     assert relay.nonce() == 1
+
+    tx.wait()

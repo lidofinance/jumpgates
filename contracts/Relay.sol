@@ -40,17 +40,19 @@ contract Relay is Ownable {
         arbiterFee = _arbiterFee;
     }
 
-    // transfers all of the `token` tokens in its possession
-    // to the `recipient` on the `recipientChain` chain
-    // via the Wormhole Token Bridge;
+    // initiates the transfer;
     function bridgeTokens() public {
-        _callBridgeTransfer();
-    }
-
-    function _callBridgeTransfer() private {
         uint256 amount = token.balanceOf(address(this));
         token.approve(address(bridge), amount);
 
+        _callBridgeTransfer(amount);
+    }
+
+    // calls the transfer on the bridge;
+    // isolates the bridge-specific logic of the transfer;
+    // when using a different bridge, change the body of this function
+    // and leave the rest of the contract unchanged
+    function _callBridgeTransfer(uint256 amount) private {
         bridge.transferTokens(
             address(token),
             amount,

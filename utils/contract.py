@@ -1,4 +1,4 @@
-from brownie import MockERC20Token, Contract, network
+from brownie import MockERC20Token, MockWormholeTokenBridge, Contract, network
 from utils.config import WORMHOLE_TOKEN_BRIDGE_ADDRESS, ERC20_TOKEN_ADDRESS
 import json
 from eth_utils import from_wei, to_wei
@@ -8,6 +8,9 @@ from utils.network import is_dev
 
 
 def get_wormhole_token_bridge_contract(chain_id):
+    if is_dev():
+        return MockWormholeTokenBridge.deploy()
+
     with open("abis/wormhole_token_bridge.json") as abi_json:
         abi = json.loads(abi_json.read())
 
@@ -45,3 +48,5 @@ def deploy_mock_erc20_token():
         "Deployer MockERC20Token balance",
         from_wei(mock_erc20_token.balanceOf(deployer.address), "ether"),
     )
+
+    return mock_erc20_token
