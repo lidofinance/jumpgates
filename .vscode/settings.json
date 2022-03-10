@@ -1,4 +1,7 @@
 {
   "python.formatting.provider": "black",
-  "conventionalCommits.scopes": ["mock bridge"]
+  "conventionalCommits.scopes": [
+    "mock bridge",
+    "relay"
+  ]
 }

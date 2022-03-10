@@ -1,33 +1,39 @@
-from brownie import Relay, MockERC20, network, accounts
-from utils.secrets import get_private_key
+from brownie import Relay, network
+
 from utils.config import (
-    TERRA_WORMHOLE_CHAIN_ID,
+    ERC20_TOKEN_ADDRESS,
     TERRA_RANDOM_ADDRESS,
-    wormhole_token_bridge,
+    TERRA_WORMHOLE_CHAIN_ID,
+    WORMHOLE_TOKEN_BRIDGE_ADDRESS,
 )
+
+# from utils.encode import encode_terra_address
+from utils.account import get_account
 from utils.encode import encode_terra_address
+import utils.log as log
+from utils.network import is_dev
 
 
 def main():
-    print(f"Network {network.chain.id}")
-    development = "fork" in network.show_active()
-    private_key = get_private_key()
-    account = accounts.add(private_key)
-    # account = accounts[0]
-    print(f"My address: {account.address}")
+    chain_id = network.chain.id
+    log.info("Network and chain id", (network.show_active(), chain_id))
 
-    print(f"Deploying MockERC20...")
-    mock_erc20 = MockERC20.deploy(
-        10**9, {"from": account}, publish_source=not development
-    )
+    deployer = get_account()
+    log.info("Deployer", deployer.address)
 
-    print("Deploying Relay contract...")
-    relay = Relay.deploy(
-        mock_erc20.address,
-        wormhole_token_bridge.get(network.chain.id),
+    token_address = ERC20_TOKEN_ADDRESS.get(chain_id)
+    log.info("Token", token_address)
+
+    bridge_address = WORMHOLE_TOKEN_BRIDGE_ADDRESS.get(chain_id)
+    recipient = encode_terra_address(TERRA_RANDOM_ADDRESS)
+    arbiter_fee = 0
+
+    Relay.deploy(
+        token_address,
+        bridge_address,
         TERRA_WORMHOLE_CHAIN_ID,
-        encode_terra_address(TERRA_RANDOM_ADDRESS),
-        0,
-        {"from": account},
-        publish_source=not development,
+        recipient,
+        arbiter_fee,
+        {"from": deployer},
+        publish_source=not is_dev(),
     )
