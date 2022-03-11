@@ -11,7 +11,7 @@ from utils.config import (
 from utils.account import get_account
 from utils.encode import encode_terra_address
 import utils.log as log
-from utils.network import is_dev
+from utils.network import is_development
 
 
 def main():
@@ -35,5 +35,5 @@ def main():
         recipient,
         arbiter_fee,
         {"from": deployer},
-        publish_source=not is_dev(),
+        publish_source=not is_development(),
     )

@@ -1,5 +1,7 @@
+from typing import List, Tuple
 import bech32
 from brownie import web3
+from solana import publickey
 
 
 def zeropad(arr, n):
