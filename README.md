@@ -9,5 +9,5 @@ Read ADR: https://hackmd.io/snwPWGqBS-ax5Ur0A5Ix5w?view
 ```bash
 $ python3 -m venv venv
 $ source venv/bin/activate
-$ pip3 install -r requirements-dev.txt
+$ pip3 install -r requirements.txt
 ```
