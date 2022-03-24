@@ -22,10 +22,6 @@ contract Relay is Ownable {
     // arbiter fee
     uint256 public immutable arbiterFee;
 
-    // nonce of the transfer
-    // incremented on each transfer
-    uint32 public nonce;
-
     constructor(
         address _token,
         address _bridge,
@@ -59,7 +55,7 @@ contract Relay is Ownable {
             recipientChain,
             recipient,
             arbiterFee,
-            nonce++
+            0
         );
     }
 

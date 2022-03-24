@@ -29,7 +29,22 @@ def test_relay_parameters(relay, token, bridge):
     assert relay.recipientChain() == TERRA_WORMHOLE_CHAIN_ID
     assert relay.recipient() == encode_terra_address(TERRA_RANDOM_ADDRESS)
     assert relay.arbiterFee() == 0
-    assert relay.nonce() == 0
+
+
+def test_recover_tokens(token, relay, token_holder):
+    # send tokens to relay
+    token_holder_tokens = token.balanceOf(token_holder.address)
+    relay_tokens = token.balanceOf(relay.address)
+    token.transfer(relay.address, one_ether, {"from": token_holder})
+    assert token.balanceOf(token_holder.address) == token_holder_tokens - one_ether
+    assert token.balanceOf(relay.address) == relay_tokens + one_ether
+
+    # recover tokens
+    token_holder_tokens = token.balanceOf(token_holder.address)
+    relay_tokens = token.balanceOf(relay.address)
+    relay.recoverERC20(token.address, token_holder.address, relay_tokens)
+    assert token.balanceOf(token_holder.address) == token_holder_tokens + relay_tokens
+    assert token.balanceOf(relay.address) == 0
 
 
 def test_recover_eth(relay, selfdestructable, stranger, another_stranger):
