@@ -71,4 +71,10 @@ contract Relay is Ownable {
     ) public onlyOwner {
         SafeERC20.safeTransfer(IERC20(_token), _recipient, amount);
     }
+
+    // recover any ETH on this contract
+    function recoverETH(address _recipient) public onlyOwner {
+        (bool success, ) = _recipient.call{value: address(this).balance}("");
+        require(success);
+    }
 }

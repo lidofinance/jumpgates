@@ -1,8 +1,10 @@
 from brownie import Relay
+from eth_utils import to_wei
 from utils.config import (
     TERRA_WORMHOLE_CHAIN_ID,
     TERRA_RANDOM_ADDRESS,
 )
+from utils.constants import one_ether
 from utils.encode import encode_terra_address
 import pytest
 
@@ -28,6 +30,19 @@ def test_relay_parameters(relay, token, bridge):
     assert relay.recipient() == encode_terra_address(TERRA_RANDOM_ADDRESS)
     assert relay.arbiterFee() == 0
     assert relay.nonce() == 0
+
+
+def test_recover_eth(relay, selfdestructable, stranger, another_stranger):
+    # top up relay balance by self-destructing another contract
+    prev_relay_balance = relay.balance()
+    selfdestructable.destroy(relay.address, {"value": one_ether, "from": stranger})
+    assert relay.balance() == prev_relay_balance + one_ether
+
+    # recover ETH; using a different recipient to avoid gas calculations
+    prev_relay_balance = relay.balance()
+    prev_recipient_balance = another_stranger.balance()
+    relay.recoverETH(another_stranger.address)
+    assert another_stranger.balance() == prev_recipient_balance + prev_relay_balance
 
 
 # @pytest.mark.parametrize("transfer_amount", [0, 1000, 1000000])

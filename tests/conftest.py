@@ -1,7 +1,7 @@
 import json
 from eth_utils import to_wei
 import pytest
-from brownie import Contract
+from brownie import Contract, Selfdestructable
 from utils.config import LDO_ADDRESS, LDO_HOLDER, WORMHOLE_TOKEN_BRIDGE_ADDRESS
 from utils.network import is_development
 
@@ -11,9 +11,24 @@ def deployer(accounts):
     return accounts[0]
 
 
+@pytest.fixture(scope="session")
+def stranger(accounts):
+    return accounts[1]
+
+
+@pytest.fixture(scope="session")
+def another_stranger(accounts):
+    return accounts[2]
+
+
 @pytest.fixture
 def token():
     return Contract.from_explorer(LDO_ADDRESS)
+
+
+@pytest.fixture
+def selfdestructable(deployer):
+    return Selfdestructable.deploy({"from": deployer})
 
 
 @pytest.fixture
