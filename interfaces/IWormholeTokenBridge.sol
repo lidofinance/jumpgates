@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 
-interface IBridge {
+interface IWormholeTokenBridge {
     function transferTokens(
         address token,
         uint256 amount,
@@ -9,5 +9,5 @@ interface IBridge {
         bytes32 recipient,
         uint256 arbiterFee,
         uint32 nonce
-    ) external;
+    ) external returns (uint64 sequence);
 }
