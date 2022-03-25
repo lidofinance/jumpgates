@@ -6,11 +6,11 @@ import "OpenZeppelin/openzeppelin-contracts@4.5.0/contracts/token/ERC20/ERC20.so
 import "./AssetRecoverer.sol";
 import "../interfaces/IWormholeTokenBridge.sol";
 
-/// @title ERC20 Token Bridger
+/// @title Token Bridger
 /// @author mymphe
 /// @notice Transfer an ERC20 token using a Wormhole token bridge with pre-determined parameters
 /// @dev `IWormholeTokenBridge` and the logic in `_callBridgeTransfer` are specific to Wormhole Token Bridge
-contract ERC20TokenBridger is AssetRecoverer {
+contract TokenBridger is AssetRecoverer {
     /// ERC20 token to be bridged
     IERC20 public immutable token;
 

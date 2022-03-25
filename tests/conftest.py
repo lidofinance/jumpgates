@@ -1,5 +1,4 @@
 import json
-from eth_utils import to_wei
 import pytest
 from brownie import Contract, Selfdestructable
 from utils.config import LDO_ADDRESS, LDO_HOLDER, WORMHOLE_TOKEN_BRIDGE_ADDRESS
