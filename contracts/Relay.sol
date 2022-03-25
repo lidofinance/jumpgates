@@ -1,12 +1,12 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 
-import "OpenZeppelin/openzeppelin-contracts@4.5.0/contracts/access/Ownable.sol";
 import "OpenZeppelin/openzeppelin-contracts@4.5.0/contracts/token/ERC20/ERC20.sol";
-import "OpenZeppelin/openzeppelin-contracts@4.5.0/contracts/token/ERC20/utils/SafeERC20.sol";
-import "../interfaces/IBridge.sol";
 
-contract Relay is Ownable {
+import "../interfaces/IBridge.sol";
+import "./Recoverable.sol";
+
+contract Relay is Recoverable {
     // tokens that are being transferred
     IERC20 public immutable token;
 
