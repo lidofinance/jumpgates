@@ -1,4 +1,4 @@
-from brownie import TokenBridger
+from brownie import TokenBridger, reverts
 from eth_utils import to_wei
 from utils.config import (
     TERRA_WORMHOLE_CHAIN_ID,
@@ -39,14 +39,27 @@ def test_auth_recover_ether(
     )
     assert token_bridger.balance() == prev_token_bridger_balance + one_ether
 
-    # recover ETH; using a different recipient to avoid gas calculations
+    # recover ETH as the owner
+    recipient = another_stranger
     prev_token_bridger_balance = token_bridger.balance()
-    prev_recipient_balance = another_stranger.balance()
-    token_bridger.recoverEther(another_stranger.address)
-    assert (
-        another_stranger.balance()
-        == prev_recipient_balance + prev_token_bridger_balance
+    prev_recipient_balance = recipient.balance()
+    token_bridger.recoverEther(recipient.address)
+    assert recipient.balance() == prev_recipient_balance + prev_token_bridger_balance
+
+
+def test_unauth_recover_ether(
+    token_bridger, selfdestructable, stranger, another_stranger
+):
+    # top up token_bridger balance by self-destructing another contract
+    prev_token_bridger_balance = token_bridger.balance()
+    selfdestructable.destroy(
+        token_bridger.address, {"value": one_ether, "from": stranger}
     )
+    assert token_bridger.balance() == prev_token_bridger_balance + one_ether
+
+    # try to recover ETH as a non-owner
+    with reverts("Ownable: caller is not the owner"):
+        token_bridger.recoverEther(another_stranger.address, {"from": another_stranger})
 
 
 def test_recover_tokens(token, token_bridger, token_holder):

@@ -25,7 +25,7 @@ def token():
     return Contract.from_explorer(LDO_ADDRESS)
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def selfdestructable(deployer):
     return Selfdestructable.deploy({"from": deployer})
 
