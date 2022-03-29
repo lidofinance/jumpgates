@@ -3,14 +3,14 @@ pragma solidity ^0.8.0;
 
 import "OpenZeppelin/openzeppelin-contracts@4.5.0/contracts/token/ERC20/ERC20.sol";
 
-import "./AssetRecovery.sol";
+import "./AssetRecoverer.sol";
 import "../interfaces/IWormholeTokenBridge.sol";
 
 /// @title Jumpgate
 /// @author mymphe
 /// @notice Transfer an ERC20 token using a Wormhole token bridge with pre-determined parameters
 /// @dev `IWormholeTokenBridge` and the logic in `_callBridgeTransfer` are specific to Wormhole Token Bridge
-contract Jumpgate is AssetRecovery {
+contract Jumpgate is AssetRecoverer {
     /// ERC20 token to be bridged
     IERC20 public immutable token;
 

@@ -103,3 +103,18 @@ def test_unauth_recover_erc721(jumpgate, deployer, stranger, nft, nft_id, nft_ho
         jumpgate.recoverERC721(
             nft.address, nft_id, deployer.address, {"from": stranger}
         )
+
+
+def test_send_ERC1155(jumpgate, multitoken, multitoken_id, multitoken_holder):
+    # make sure holder owns the token
+    assert multitoken.balanceOf(multitoken_holder.address, multitoken_id) == 1
+    # try to transfer the token to jumpgate
+    with reverts(""):
+        multitoken.safeTransferFrom(
+            multitoken_holder.address,
+            jumpgate.address,
+            multitoken_id,
+            1,
+            "",
+            {"from": multitoken_holder},
+        )

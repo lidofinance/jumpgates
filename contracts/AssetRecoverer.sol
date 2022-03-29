@@ -7,11 +7,11 @@ import "OpenZeppelin/openzeppelin-contracts@4.5.0/contracts/token/ERC20/IERC20.s
 import "OpenZeppelin/openzeppelin-contracts@4.5.0/contracts/token/ERC721/IERC721.sol";
 import "OpenZeppelin/openzeppelin-contracts@4.5.0/contracts/token/ERC1155/IERC1155.sol";
 
-/// @title Asset recovery
+/// @title Asset Recoverer
 /// @author mymphe
 /// @notice Recover ether, ERC20, ERC721 and ERC1155 from a derived contract
 /// @dev inherit from this contract to enable authorized asset recovery
-abstract contract AssetRecovery is Ownable {
+abstract contract AssetRecoverer is Ownable {
     /// @notice recover all of ether on this contract as the owner
     /// @dev using the safer `call` instead for `transfer`
     /// @param _recipient address to send ether to

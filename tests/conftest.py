@@ -4,8 +4,10 @@ from brownie import Contract, Destrudo
 from utils.config import (
     LDO_ADDRESS,
     LDO_HOLDER,
+    MULTITOKEN_ID,
     NFT_ID,
-    RARIBLE_ADDRESS,
+    RARIBLE_MT_ADDRESS,
+    RARIBLE_NFT_ADDRESS,
     VITALIK,
     WORMHOLE_TOKEN_BRIDGE_ADDRESS,
 )
@@ -32,6 +34,7 @@ def another_stranger(accounts):
     return accounts[2]
 
 
+# ERC20
 @pytest.fixture
 def token():
     return Contract.from_explorer(LDO_ADDRESS)
@@ -42,9 +45,10 @@ def token_holder(accounts):
     return accounts.at(LDO_HOLDER, force=True)
 
 
+# ERC721
 @pytest.fixture(scope="function")
 def nft():
-    return Contract.from_explorer(RARIBLE_ADDRESS)
+    return Contract.from_explorer(RARIBLE_NFT_ADDRESS)
 
 
 @pytest.fixture
@@ -54,6 +58,22 @@ def nft_id():
 
 @pytest.fixture(scope="function")
 def nft_holder(accounts):
+    return accounts.at(VITALIK, force=True)
+
+
+# ERC1155
+@pytest.fixture(scope="function")
+def multitoken():
+    return Contract.from_explorer(RARIBLE_MT_ADDRESS)
+
+
+@pytest.fixture
+def multitoken_id():
+    return MULTITOKEN_ID
+
+
+@pytest.fixture(scope="function")
+def multitoken_holder(accounts):
     return accounts.at(VITALIK, force=True)
 
 
