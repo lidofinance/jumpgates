@@ -63,6 +63,18 @@ def test_auth_recover_ether(
 
 
 @pytest.mark.parametrize("amount", [0, 1, one_quintillion])
+def test_unauth_recover_ether(jumpgate, destrudo, amount, stranger, another_stranger):
+    # top up jumpgate balance using a self-destructable contract
+    jumpgate_balance_before = jumpgate.balance()
+    destrudo.destructSelf(jumpgate.address, {"value": amount, "from": stranger})
+    assert jumpgate.balance() == jumpgate_balance_before + amount
+
+    # try to recover ETH as a non-owner
+    with reverts("Ownable: caller is not the owner"):
+        jumpgate.recoverEther(another_stranger.address, {"from": another_stranger})
+
+
+@pytest.mark.parametrize("amount", [0, 1, one_quintillion])
 def test_auth_recover_erc20(token, jumpgate, amount, token_holder):
     # send tokens to jumpgate
     holder_balance_before = token.balanceOf(token_holder.address)
@@ -83,15 +95,17 @@ def test_auth_recover_erc20(token, jumpgate, amount, token_holder):
 
 
 @pytest.mark.parametrize("amount", [0, 1, one_quintillion])
-def test_unauth_recover_ether(jumpgate, destrudo, amount, stranger, another_stranger):
-    # top up jumpgate balance using a self-destructable contract
-    jumpgate_balance_before = jumpgate.balance()
-    destrudo.destructSelf(jumpgate.address, {"value": amount, "from": stranger})
-    assert jumpgate.balance() == jumpgate_balance_before + amount
+def test_unauth_recover_erc20(token, jumpgate, amount, token_holder, stranger):
+    # send tokens to jumpgate
+    holder_balance_before = token.balanceOf(token_holder.address)
+    jumpgate_balance_before = token.balanceOf(jumpgate.address)
+    token.transfer(jumpgate.address, amount, {"from": token_holder})
+    assert token.balanceOf(token_holder.address) == holder_balance_before - amount
+    assert token.balanceOf(jumpgate.address) == jumpgate_balance_before + amount
 
-    # try to recover ETH as a non-owner
+    # try to recover tokens as a non-owner
     with reverts("Ownable: caller is not the owner"):
-        jumpgate.recoverEther(another_stranger.address, {"from": another_stranger})
+        jumpgate.recoverERC20(token.address, token_holder.address, {"from": stranger})
 
 
 def test_auth_recover_erc721(jumpgate, deployer, nft, nft_id, nft_holder):
