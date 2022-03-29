@@ -57,11 +57,12 @@ def test_auth_recover_erc20(token, jumpgate, amount, token_holder):
     assert token.balanceOf(jumpgate.address) == jumpgate_balance_before + amount
 
     # recover tokens
-    token_holder_tokens = token.balanceOf(token_holder.address)
-    jumpgate_tokens = token.balanceOf(jumpgate.address)
+    holder_balance_before = token.balanceOf(token_holder.address)
+    jumpgate_balance_before = token.balanceOf(jumpgate.address)
     jumpgate.recoverERC20(token.address, token_holder.address)
     assert (
-        token.balanceOf(token_holder.address) == token_holder_tokens + jumpgate_tokens
+        token.balanceOf(token_holder.address)
+        == holder_balance_before + jumpgate_balance_before
     )
     assert token.balanceOf(jumpgate.address) == 0
 
