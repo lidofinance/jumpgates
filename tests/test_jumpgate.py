@@ -1,4 +1,5 @@
-from brownie import Jumpgate, reverts
+from brownie import Jumpgate, reverts, web3
+from brownie.network.event import _decode_logs
 from utils.config import (
     SOLANA_RANDOM_ADDRESS,
     SOLANA_WORMHOLE_CHAIN_ID,
@@ -147,3 +148,16 @@ def test_send_ERC1155(jumpgate, multitoken, multitoken_id, multitoken_holder):
             "",
             {"from": multitoken_holder},
         )
+
+
+def test_bridge_tokens(jumpgate, token, token_holder, bridge):
+    token.transfer(jumpgate.address, 1000, {"from": token_holder})
+    assert token.balanceOf(jumpgate.address) == 1000
+
+    tx = jumpgate.bridgeTokens()
+
+    events = _decode_logs(tx.logs)
+    assert "Approval" in events
+    assert events["Approval"]["_owner"] == jumpgate.address
+    assert events["Approval"]["_spender"] == bridge.address
+    assert events["Approval"]["_amount"] == 1000
