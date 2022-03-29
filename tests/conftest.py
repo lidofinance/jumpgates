@@ -1,6 +1,6 @@
 import json
 import pytest
-from brownie import Contract, Destrudo
+from brownie import Contract, Jumpgate, Destrudo
 from utils.config import (
     LDO_ADDRESS,
     LDO_HOLDER,
@@ -8,9 +8,12 @@ from utils.config import (
     NFT_ID,
     RARIBLE_MT_ADDRESS,
     RARIBLE_NFT_ADDRESS,
+    TERRA_RANDOM_ADDRESS,
+    TERRA_WORMHOLE_CHAIN_ID,
     VITALIK,
     WORMHOLE_TOKEN_BRIDGE_ADDRESS,
 )
+from utils.encode import encode_terra_address
 from utils.network import is_development
 
 
@@ -38,6 +41,18 @@ def another_stranger(accounts):
 @pytest.fixture
 def token():
     return Contract.from_explorer(LDO_ADDRESS)
+
+
+@pytest.fixture(scope="function")
+def jumpgate(deployer, token, bridge):
+    return Jumpgate.deploy(
+        token.address,
+        bridge.address,
+        TERRA_WORMHOLE_CHAIN_ID,
+        encode_terra_address(TERRA_RANDOM_ADDRESS),
+        0,
+        {"from": deployer},
+    )
 
 
 @pytest.fixture
@@ -93,4 +108,16 @@ def bridge():
         abi = json.loads(file.read())
     return Contract.from_abi(
         "Wormhole: Token Bridge", WORMHOLE_TOKEN_BRIDGE_ADDRESS, abi
+    )
+
+
+@pytest.fixture(scope="function")
+def jumpgate(deployer, token, bridge):
+    return Jumpgate.deploy(
+        token.address,
+        bridge.address,
+        TERRA_WORMHOLE_CHAIN_ID,
+        encode_terra_address(TERRA_RANDOM_ADDRESS),
+        0,
+        {"from": deployer},
     )

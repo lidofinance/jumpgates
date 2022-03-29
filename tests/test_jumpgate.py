@@ -1,17 +1,17 @@
-from brownie import Jumpgate, reverts, web3
-from eth_utils import to_wei
+from brownie import Jumpgate, reverts
 from utils.config import (
+    SOLANA_RANDOM_ADDRESS,
+    SOLANA_WORMHOLE_CHAIN_ID,
     TERRA_WORMHOLE_CHAIN_ID,
     TERRA_RANDOM_ADDRESS,
 )
 from utils.constants import one_quintillion
-from utils.encode import encode_terra_address
+from utils.encode import encode_solana_address, encode_terra_address
 import pytest
 
 
-@pytest.fixture(scope="function")
-def jumpgate(deployer, token, bridge):
-    return Jumpgate.deploy(
+def test_terra_deploy_parameters(token, bridge, deployer):
+    terra_jumpgate = Jumpgate.deploy(
         token.address,
         bridge.address,
         TERRA_WORMHOLE_CHAIN_ID,
@@ -20,13 +20,28 @@ def jumpgate(deployer, token, bridge):
         {"from": deployer},
     )
 
+    assert terra_jumpgate.token() == token.address
+    assert terra_jumpgate.bridge() == bridge.address
+    assert terra_jumpgate.recipientChain() == TERRA_WORMHOLE_CHAIN_ID
+    assert terra_jumpgate.recipient() == encode_terra_address(TERRA_RANDOM_ADDRESS)
+    assert terra_jumpgate.arbiterFee() == 0
 
-def test_deploy_parameters(jumpgate, token, bridge):
-    assert jumpgate.token() == token.address
-    assert jumpgate.bridge() == bridge.address
-    assert jumpgate.recipientChain() == TERRA_WORMHOLE_CHAIN_ID
-    assert jumpgate.recipient() == encode_terra_address(TERRA_RANDOM_ADDRESS)
-    assert jumpgate.arbiterFee() == 0
+
+def test_solana_deploy_parameters(token, bridge, deployer):
+    solana_jumpgate = Jumpgate.deploy(
+        token.address,
+        bridge.address,
+        SOLANA_WORMHOLE_CHAIN_ID,
+        encode_solana_address(SOLANA_RANDOM_ADDRESS),
+        0,
+        {"from": deployer},
+    )
+
+    assert solana_jumpgate.token() == token.address
+    assert solana_jumpgate.bridge() == bridge.address
+    assert solana_jumpgate.recipientChain() == SOLANA_WORMHOLE_CHAIN_ID
+    assert solana_jumpgate.recipient() == encode_solana_address(SOLANA_RANDOM_ADDRESS)
+    assert solana_jumpgate.arbiterFee() == 0
 
 
 @pytest.mark.parametrize("amount", [0, 1, one_quintillion])
