@@ -1,6 +1,6 @@
 import json
 import pytest
-from brownie import Contract, Selfdestructable
+from brownie import Contract, Destrudo
 from utils.config import LDO_ADDRESS, LDO_HOLDER, WORMHOLE_TOKEN_BRIDGE_ADDRESS
 from utils.network import is_development
 
@@ -26,8 +26,8 @@ def token():
 
 
 @pytest.fixture(scope="function")
-def selfdestructable(deployer):
-    return Selfdestructable.deploy({"from": deployer})
+def destrudo(deployer):
+    return Destrudo.deploy({"from": deployer})
 
 
 @pytest.fixture

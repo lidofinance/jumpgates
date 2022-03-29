@@ -1,4 +1,4 @@
 from eth_utils import to_wei
 
-
-one_ether = to_wei(1, "ether")
+## 10 ** 18
+one_quintillion = to_wei(1, "ether")

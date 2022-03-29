@@ -1,10 +1,10 @@
-from brownie import Jumpgate, reverts
+from brownie import Jumpgate, reverts, web3
 from eth_utils import to_wei
 from utils.config import (
     TERRA_WORMHOLE_CHAIN_ID,
     TERRA_RANDOM_ADDRESS,
 )
-from utils.constants import one_ether
+from utils.constants import one_quintillion
 from utils.encode import encode_terra_address
 import pytest
 
@@ -29,38 +29,32 @@ def test_deploy_parameters(jumpgate, token, bridge):
     assert jumpgate.arbiterFee() == 0
 
 
-def test_auth_recover_ether(jumpgate, selfdestructable, stranger, another_stranger):
-    # top up jumpgate balance by self-destructing another contract
-    prev_jumpgate_balance = jumpgate.balance()
-    selfdestructable.destroy(jumpgate.address, {"value": one_ether, "from": stranger})
-    assert jumpgate.balance() == prev_jumpgate_balance + one_ether
+@pytest.mark.parametrize("amount", [0, 1, one_quintillion])
+def test_auth_recover_ether(
+    jumpgate, destrudo, amount, deployer, stranger, another_stranger
+):
+    # top up jumpgate balance using a self-destructable contract
+    jumpgate_balance_before = jumpgate.balance()
+    destrudo.destructSelf(jumpgate.address, {"value": amount, "from": stranger})
+    assert jumpgate.balance() == jumpgate_balance_before + amount
 
-    # recover ETH as the owner
-    recipient = another_stranger
-    prev_jumpgate_balance = jumpgate.balance()
-    prev_recipient_balance = recipient.balance()
-    jumpgate.recoverEther(recipient.address)
-    assert recipient.balance() == prev_recipient_balance + prev_jumpgate_balance
-
-
-def test_unauth_recover_ether(jumpgate, selfdestructable, stranger, another_stranger):
-    # top up jumpgate balance by self-destructing another contract
-    prev_jumpgate_balance = jumpgate.balance()
-    selfdestructable.destroy(jumpgate.address, {"value": one_ether, "from": stranger})
-    assert jumpgate.balance() == prev_jumpgate_balance + one_ether
-
-    # try to recover ETH as a non-owner
-    with reverts("Ownable: caller is not the owner"):
-        jumpgate.recoverEther(another_stranger.address, {"from": another_stranger})
+    # recover ether as the owner to some recipient
+    jumpgate_balance_before = jumpgate.balance()
+    recipient_balance_before = another_stranger.balance()
+    jumpgate.recoverEther(another_stranger.address, {"from": deployer})
+    assert (
+        another_stranger.balance() == jumpgate_balance_before + recipient_balance_before
+    )
 
 
-def test_recover_tokens(token, jumpgate, token_holder):
+@pytest.mark.parametrize("amount", [0, 1, one_quintillion])
+def test_auth_recover_erc20(token, jumpgate, amount, token_holder):
     # send tokens to jumpgate
-    token_holder_tokens = token.balanceOf(token_holder.address)
-    jumpgate_tokens = token.balanceOf(jumpgate.address)
-    token.transfer(jumpgate.address, one_ether, {"from": token_holder})
-    assert token.balanceOf(token_holder.address) == token_holder_tokens - one_ether
-    assert token.balanceOf(jumpgate.address) == jumpgate_tokens + one_ether
+    holder_balance_before = token.balanceOf(token_holder.address)
+    jumpgate_balance_before = token.balanceOf(jumpgate.address)
+    token.transfer(jumpgate.address, amount, {"from": token_holder})
+    assert token.balanceOf(token_holder.address) == holder_balance_before - amount
+    assert token.balanceOf(jumpgate.address) == jumpgate_balance_before + amount
 
     # recover tokens
     token_holder_tokens = token.balanceOf(token_holder.address)
@@ -70,3 +64,15 @@ def test_recover_tokens(token, jumpgate, token_holder):
         token.balanceOf(token_holder.address) == token_holder_tokens + jumpgate_tokens
     )
     assert token.balanceOf(jumpgate.address) == 0
+
+
+@pytest.mark.parametrize("amount", [0, 1, one_quintillion])
+def test_unauth_recover_ether(jumpgate, destrudo, amount, stranger, another_stranger):
+    # top up jumpgate balance using a self-destructable contract
+    jumpgate_balance_before = jumpgate.balance()
+    destrudo.destructSelf(jumpgate.address, {"value": amount, "from": stranger})
+    assert jumpgate.balance() == jumpgate_balance_before + amount
+
+    # try to recover ETH as a non-owner
+    with reverts("Ownable: caller is not the owner"):
+        jumpgate.recoverEther(another_stranger.address, {"from": another_stranger})
