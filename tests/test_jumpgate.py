@@ -77,3 +77,29 @@ def test_unauth_recover_ether(jumpgate, destrudo, amount, stranger, another_stra
     # try to recover ETH as a non-owner
     with reverts("Ownable: caller is not the owner"):
         jumpgate.recoverEther(another_stranger.address, {"from": another_stranger})
+
+
+def test_auth_recover_erc721(jumpgate, deployer, nft, nft_id, nft_holder):
+    # make sure nft_holder still owns the nft
+    assert nft.ownerOf(nft_id) == nft_holder
+    # transfer the nft to jumpgate
+    nft.transferFrom(nft_holder.address, jumpgate.address, nft_id, {"from": nft_holder})
+    assert nft.ownerOf(nft_id) == jumpgate.address
+
+    # recover the nft to deployer as the owner
+    jumpgate.recoverERC721(nft.address, nft_id, deployer.address, {"from": deployer})
+    assert nft.ownerOf(nft_id) == deployer.address
+
+
+def test_unauth_recover_erc721(jumpgate, deployer, stranger, nft, nft_id, nft_holder):
+    # make sure nft_holder still owns the nft
+    assert nft.ownerOf(nft_id) == nft_holder
+    # transfer the nft to jumpgate
+    nft.transferFrom(nft_holder.address, jumpgate.address, nft_id, {"from": nft_holder})
+    assert nft.ownerOf(nft_id) == jumpgate.address
+
+    # try to recover the nft to deployer as a non-owner
+    with reverts("Ownable: caller is not the owner"):
+        jumpgate.recoverERC721(
+            nft.address, nft_id, deployer.address, {"from": stranger}
+        )
