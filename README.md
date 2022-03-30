@@ -1,4 +1,4 @@
-# JUMP🌀ATES
+# 🌀 JUMPGATES 🌀
 
 Jumpgates are a class of contracts that streamline cross-chain token transfers under the Lido DAO. Although autonomous, jumpgates are meant to be part of the Easy Track Rewards Program pipeline.
 
