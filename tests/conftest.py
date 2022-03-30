@@ -43,18 +43,6 @@ def token():
     return Contract.from_explorer(LDO_ADDRESS)
 
 
-@pytest.fixture(scope="function")
-def jumpgate(deployer, token, bridge):
-    return Jumpgate.deploy(
-        token.address,
-        bridge.address,
-        TERRA_WORMHOLE_CHAIN_ID,
-        encode_terra_address(TERRA_RANDOM_ADDRESS),
-        0,
-        {"from": deployer},
-    )
-
-
 @pytest.fixture
 def token_holder(accounts):
     return accounts.at(LDO_HOLDER, force=True)
@@ -103,7 +91,7 @@ def token_holder(accounts):
 
 
 @pytest.fixture
-def bridge():
+def bridge(interface):
     with open("abis/wormhole_token_bridge.json") as file:
         abi = json.loads(file.read())
     return Contract.from_abi(

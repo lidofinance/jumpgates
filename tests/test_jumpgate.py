@@ -1,4 +1,4 @@
-from brownie import Jumpgate, reverts, web3
+from brownie import Jumpgate, reverts
 from brownie.network.event import _decode_logs
 from utils.config import (
     SOLANA_RANDOM_ADDRESS,
@@ -150,15 +150,19 @@ def test_send_ERC1155(jumpgate, multitoken, multitoken_id, multitoken_holder):
         )
 
 
-@pytest.mark.parametrize("amount", [0, 1, one_quintillion])
+# test 1 billion wei
+@pytest.mark.parametrize("amount", [0, one_quintillion])
 def test_bridge_tokens(jumpgate, token, amount, token_holder, bridge):
     token.transfer(jumpgate.address, amount, {"from": token_holder})
     assert token.balanceOf(jumpgate.address) == amount
 
-    tx = jumpgate.bridgeTokens()
+    bridge_balance_before = token.balanceOf(bridge.address)
+    events = jumpgate.bridgeTokens().events
 
-    events = _decode_logs(tx.logs)
     assert "Approval" in events
     assert events["Approval"]["_owner"] == jumpgate.address
     assert events["Approval"]["_spender"] == bridge.address
     assert events["Approval"]["_amount"] == amount
+
+    assert token.balanceOf(jumpgate.address) == 0
+    assert token.balanceOf(bridge.address) == bridge_balance_before + amount

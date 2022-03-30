@@ -12,19 +12,19 @@ import "../interfaces/IWormholeTokenBridge.sol";
 /// @dev `IWormholeTokenBridge` and the logic in `_callBridgeTransfer` are specific to Wormhole Token Bridge
 contract Jumpgate is AssetRecoverer {
     /// ERC20 token to be bridged
-    IERC20 public immutable token;
+    IERC20 public token;
 
     /// Wormhole token bridge
-    IWormholeTokenBridge public immutable bridge;
+    IWormholeTokenBridge public bridge;
 
     /// Wormhole id of the target chain
-    uint16 public immutable recipientChain;
+    uint16 public recipientChain;
 
     /// bytes32-encoded recipient address on the target chain
-    bytes32 public immutable recipient;
+    bytes32 public recipient;
 
     /// Wormhole arbiter fee
-    uint256 public immutable arbiterFee;
+    uint256 public arbiterFee;
 
     constructor(
         address _token,
@@ -46,16 +46,14 @@ contract Jumpgate is AssetRecoverer {
         uint256 amount = token.balanceOf(address(this));
         token.approve(address(bridge), amount);
 
-        bool success = _callBridgeTransfer(amount);
-        require(success);
+        _callBridgeTransfer(amount);
     }
 
     /// @notice calls the transfer method on the bridge
     /// @dev implements the actual logic of the bridge transfer
     /// @param _amount amount of tokens to transfer
-    /// @return bool whether the transfer succeeded or not
-    function _callBridgeTransfer(uint256 _amount) private returns (bool) {
-        uint64 sequence = bridge.transferTokens(
+    function _callBridgeTransfer(uint256 _amount) private {
+        bridge.transferTokens(
             address(token),
             _amount,
             recipientChain,
@@ -63,8 +61,5 @@ contract Jumpgate is AssetRecoverer {
             arbiterFee,
             0
         );
-
-        require(sequence >= 0);
-        return true;
     }
 }
