@@ -150,9 +150,10 @@ def test_send_ERC1155(jumpgate, multitoken, multitoken_id, multitoken_holder):
         )
 
 
-def test_bridge_tokens(jumpgate, token, token_holder, bridge):
-    token.transfer(jumpgate.address, 1000, {"from": token_holder})
-    assert token.balanceOf(jumpgate.address) == 1000
+@pytest.mark.parametrize("amount", [0, 1, one_quintillion])
+def test_bridge_tokens(jumpgate, token, amount, token_holder, bridge):
+    token.transfer(jumpgate.address, amount, {"from": token_holder})
+    assert token.balanceOf(jumpgate.address) == amount
 
     tx = jumpgate.bridgeTokens()
 
@@ -160,4 +161,4 @@ def test_bridge_tokens(jumpgate, token, token_holder, bridge):
     assert "Approval" in events
     assert events["Approval"]["_owner"] == jumpgate.address
     assert events["Approval"]["_spender"] == bridge.address
-    assert events["Approval"]["_amount"] == 1000
+    assert events["Approval"]["_amount"] == amount
