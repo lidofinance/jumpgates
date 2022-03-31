@@ -57,10 +57,14 @@ def test_auth_recover_ether(
     # recover ether as the owner to some recipient
     jumpgate_balance_before = jumpgate.balance()
     recipient_balance_before = another_stranger.balance()
-    jumpgate.recoverEther(another_stranger.address, {"from": deployer})
+    events = jumpgate.recoverEther(another_stranger.address, {"from": deployer}).events
+
     assert (
         another_stranger.balance() == jumpgate_balance_before + recipient_balance_before
     )
+    assert "EtherRecovered" in events
+    assert events["EtherRecovered"]["_recipient"] == another_stranger.address
+    assert events["EtherRecovered"]["_amount"] == jumpgate_balance_before
 
 
 @pytest.mark.parametrize("amount", [0, 1, one_quintillion])
@@ -87,12 +91,24 @@ def test_auth_recover_erc20(token, jumpgate, amount, token_holder):
     # recover tokens
     holder_balance_before = token.balanceOf(token_holder.address)
     jumpgate_balance_before = token.balanceOf(jumpgate.address)
-    jumpgate.recoverERC20(token.address, token_holder.address)
+    events = jumpgate.recoverERC20(token.address, token_holder.address).events
+
     assert (
         token.balanceOf(token_holder.address)
         == holder_balance_before + jumpgate_balance_before
     )
     assert token.balanceOf(jumpgate.address) == 0
+
+    if amount > 0:
+        assert "Transfer" in events
+        assert events["Transfer"]["_from"] == jumpgate.address
+        assert events["Transfer"]["_to"] == token_holder.address
+        assert events["Transfer"]["_amount"] == jumpgate_balance_before
+
+    assert "ERC20Recovered" in events
+    assert events["ERC20Recovered"]["_token"] == token.address
+    assert events["ERC20Recovered"]["_recipient"] == token_holder.address
+    assert events["ERC20Recovered"]["_amount"] == jumpgate_balance_before
 
 
 @pytest.mark.parametrize("amount", [0, 1, one_quintillion])
@@ -117,8 +133,21 @@ def test_auth_recover_erc721(jumpgate, deployer, nft, nft_id, nft_holder):
     assert nft.ownerOf(nft_id) == jumpgate.address
 
     # recover the nft to deployer as the owner
-    jumpgate.recoverERC721(nft.address, nft_id, deployer.address, {"from": deployer})
+    events = jumpgate.recoverERC721(
+        nft.address, nft_id, deployer.address, {"from": deployer}
+    ).events
+
     assert nft.ownerOf(nft_id) == deployer.address
+
+    assert "Transfer" in events
+    assert events["Transfer"]["from"] == jumpgate.address
+    assert events["Transfer"]["to"] == deployer.address
+    assert events["Transfer"]["tokenId"] == nft_id
+
+    assert "ERC721Recovered" in events
+    assert events["ERC721Recovered"]["_token"] == nft.address
+    assert events["ERC721Recovered"]["_tokenId"] == nft_id
+    assert events["ERC721Recovered"]["_recipient"] == deployer.address
 
 
 def test_unauth_recover_erc721(jumpgate, deployer, stranger, nft, nft_id, nft_holder):
