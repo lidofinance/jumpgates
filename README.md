@@ -1,9 +1,12 @@
-![logo](img/logo.png?raw=true | width=200px)
 
-# JUMPGATES
+<div style="display: flex;">
+<h1>Jumpgates
+<img src="https://raw.githubusercontent.com/lidofinance/jumpgates/main/img/logo.png" width="128" align="right" />
+</div>
+
 
 Jumpgates streamline cross-chain token transfers under the Lido DAO incentive programs. Although autonomous, jumpgates are meant to be part of the Easy Track Rewards Program pipeline.
-
+  
 ## What is a jumpgate?
 
 A jumpgate is a contract that serves as a launching point for token transportation via token bridges such as Wormhole, Terra Shuttle, etc. Each individual jumpgate carries only one type of tokens to a single cross-chain recipient through a pre-determined bridge. Jumpgate activation is performed manually by executing a permissionless transaction.
