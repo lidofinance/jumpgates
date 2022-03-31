@@ -10,6 +10,11 @@ def highlight(text, color=color_hl):
     return f"{color}{text}{color_end}"
 
 
+def prompt_yes_no(text):
+    answer = input(f"{color_yellow}{text} (y/n) > {color_end}")
+    return "y" in answer.lower()
+
+
 def info(text, value=None):
     result = highlight("[info] ", color_blue) + text
 
