@@ -2,6 +2,14 @@
 pragma solidity ^0.8.0;
 
 interface IWormholeTokenBridge {
+    event LogMessagePublished(
+        address indexed sender,
+        uint64 sequence,
+        uint32 nonce,
+        bytes payload,
+        uint8 consistencyLevel
+    );
+
     function transferTokens(
         address token,
         uint256 amount,

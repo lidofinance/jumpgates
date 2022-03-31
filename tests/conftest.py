@@ -1,4 +1,3 @@
-import json
 import pytest
 from brownie import Contract, Jumpgate, Destrudo
 from utils.config import (
@@ -14,7 +13,6 @@ from utils.config import (
     WORMHOLE_TOKEN_BRIDGE_ADDRESS,
 )
 from utils.encode import encode_terra_address
-from utils.network import is_development
 
 
 @pytest.fixture(autouse=True)
@@ -92,11 +90,7 @@ def token_holder(accounts):
 
 @pytest.fixture
 def bridge(interface):
-    with open("abis/wormhole_token_bridge.json") as file:
-        abi = json.loads(file.read())
-    return Contract.from_abi(
-        "Wormhole: Token Bridge", WORMHOLE_TOKEN_BRIDGE_ADDRESS, abi
-    )
+    return interface.IWormholeTokenBridge(WORMHOLE_TOKEN_BRIDGE_ADDRESS)
 
 
 @pytest.fixture(scope="function")
