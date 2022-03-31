@@ -12,12 +12,32 @@ import "OpenZeppelin/openzeppelin-contracts@4.5.0/contracts/token/ERC1155/IERC11
 /// @notice Recover ether, ERC20, ERC721 and ERC1155 from a derived contract
 /// @dev inherit from this contract to enable authorized asset recovery
 abstract contract AssetRecoverer is Ownable {
+    event EtherRecovered(address indexed _recipient, uint256 _amount);
+    event ERC20Recovered(
+        address indexed _token,
+        address indexed _recipient,
+        uint256 _amount
+    );
+    event ERC721Recovered(
+        address indexed _token,
+        uint256 _tokenId,
+        address indexed _recipient
+    );
+    event ERC1155Recovered(
+        address indexed _token,
+        uint256 _tokenId,
+        address indexed _recipient,
+        uint256 _amount
+    );
+
     /// @notice recover all of ether on this contract as the owner
     /// @dev using the safer `call` instead for `transfer`
     /// @param _recipient address to send ether to
     function recoverEther(address _recipient) public onlyOwner {
-        (bool success, ) = _recipient.call{value: address(this).balance}("");
+        uint256 amount = address(this).balance;
+        (bool success, ) = _recipient.call{value: amount}("");
         require(success);
+        emit EtherRecovered(_recipient, amount);
     }
 
     /// @notice recover an ERC20 token on this contract's balance as the owner
@@ -27,6 +47,7 @@ abstract contract AssetRecoverer is Ownable {
     function recoverERC20(address _token, address _recipient) public onlyOwner {
         uint256 amount = IERC20(_token).balanceOf(address(this));
         SafeERC20.safeTransfer(IERC20(_token), _recipient, amount);
+        emit ERC20Recovered(_token, _recipient, amount);
     }
 
     /// @notice recover an ERC721 token on this contract's balance as the owner
@@ -40,6 +61,7 @@ abstract contract AssetRecoverer is Ownable {
         address _recipient
     ) public onlyOwner {
         IERC721(_token).safeTransferFrom(address(this), _recipient, _tokenId);
+        emit ERC721Recovered(_token, _tokenId, _recipient);
     }
 
     /// @notice recover an ERC1155 token on this contract's balance as the owner
@@ -60,5 +82,6 @@ abstract contract AssetRecoverer is Ownable {
             amount,
             ""
         );
+        emit ERC1155Recovered(_token, _tokenId, _recipient, amount);
     }
 }
