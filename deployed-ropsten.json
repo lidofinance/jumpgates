@@ -1,0 +1,8 @@
+{
+  "jumpgate": "0x34924c3BaA02cE22BFBa5914C8Cb3e78C8bb2a01",
+  "token": "0x9D6735b53D357626DD892F186411dd3fC58b4f02",
+  "bridge": "0xf174f9a837536c449321df1ca093bb96948d5386",
+  "recipientChain": 3,
+  "recipient": "terra1t6kzvnhd4l3nlzw0tnpdmx5xrjw0zp6d75ms8f",
+  "arbiterFee": 0
+}
