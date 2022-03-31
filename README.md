@@ -1,4 +1,4 @@
-![logo][img/1000x1000.png]
+![logo][img/logo.png?raw=true]
 
 # JUMPGATES
 
