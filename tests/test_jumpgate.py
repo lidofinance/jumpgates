@@ -150,13 +150,20 @@ def test_send_ERC1155(jumpgate, multitoken, multitoken_id, multitoken_holder):
         )
 
 
-# test 1 billion wei
-@pytest.mark.parametrize("amount", [0, one_quintillion])
+BRIDGE_DUST_CUTOFF = 10**10
+
+
+@pytest.mark.parametrize(
+    "amount",
+    [0, 1, BRIDGE_DUST_CUTOFF - 1, BRIDGE_DUST_CUTOFF, one_quintillion],
+)
 def test_bridge_tokens(jumpgate, token, amount, token_holder, bridge):
+    # transfer tokens the jumpgate
     token.transfer(jumpgate.address, amount, {"from": token_holder})
     assert token.balanceOf(jumpgate.address) == amount
 
     bridge_balance_before = token.balanceOf(bridge.address)
+    # activate jumpgate
     events = jumpgate.bridgeTokens().events
 
     assert "Approval" in events
@@ -164,5 +171,20 @@ def test_bridge_tokens(jumpgate, token, amount, token_holder, bridge):
     assert events["Approval"]["_spender"] == bridge.address
     assert events["Approval"]["_amount"] == amount
 
-    assert token.balanceOf(jumpgate.address) == 0
-    assert token.balanceOf(bridge.address) == bridge_balance_before + amount
+    # Wormhole Bridge ignores dust due to the decimal shift
+    if amount < BRIDGE_DUST_CUTOFF:
+        assert "Transfer" not in events
+    else:
+        assert "Transfer" in events
+        assert events["Transfer"]["_from"] == jumpgate.address
+        assert events["Transfer"]["_to"] == bridge.address
+        assert events["Transfer"]["_amount"] == amount
+
+        assert token.balanceOf(jumpgate.address) == 0
+        assert token.balanceOf(bridge.address) == bridge_balance_before + amount
+
+    assert "LogMessagePublished" in events
+    assert events["LogMessagePublished"]["sender"] == bridge.address
+    assert events["LogMessagePublished"]["sequence"] > 0
+    assert events["LogMessagePublished"]["nonce"] == 0
+    assert events["LogMessagePublished"]["consistencyLevel"] == 15
