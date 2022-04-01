@@ -1,13 +1,10 @@
 from brownie import Jumpgate, reverts
-from brownie.network.event import _decode_logs
 from utils.config import (
-    SOLANA_RANDOM_ADDRESS,
-    SOLANA_WORMHOLE_CHAIN_ID,
     TERRA_WORMHOLE_CHAIN_ID,
     TERRA_RANDOM_ADDRESS,
 )
 from utils.constants import one_quintillion
-from utils.encode import encode_solana_address, encode_terra_address
+from utils.encode import encode_terra_address
 import pytest
 
 
@@ -26,23 +23,6 @@ def test_terra_deploy_parameters(token, bridge, deployer):
     assert terra_jumpgate.recipientChain() == TERRA_WORMHOLE_CHAIN_ID
     assert terra_jumpgate.recipient() == encode_terra_address(TERRA_RANDOM_ADDRESS)
     assert terra_jumpgate.arbiterFee() == 0
-
-
-def test_solana_deploy_parameters(token, bridge, deployer):
-    solana_jumpgate = Jumpgate.deploy(
-        token.address,
-        bridge.address,
-        SOLANA_WORMHOLE_CHAIN_ID,
-        encode_solana_address(SOLANA_RANDOM_ADDRESS),
-        0,
-        {"from": deployer},
-    )
-
-    assert solana_jumpgate.token() == token.address
-    assert solana_jumpgate.bridge() == bridge.address
-    assert solana_jumpgate.recipientChain() == SOLANA_WORMHOLE_CHAIN_ID
-    assert solana_jumpgate.recipient() == encode_solana_address(SOLANA_RANDOM_ADDRESS)
-    assert solana_jumpgate.arbiterFee() == 0
 
 
 @pytest.mark.parametrize("amount", [0, 1, one_quintillion])
@@ -91,7 +71,9 @@ def test_auth_recover_erc20(token, jumpgate, amount, token_holder):
     # recover tokens
     holder_balance_before = token.balanceOf(token_holder.address)
     jumpgate_balance_before = token.balanceOf(jumpgate.address)
-    events = jumpgate.recoverERC20(token.address, token_holder.address).events
+    events = jumpgate.recoverERC20(
+        token.address, token_holder.address, jumpgate_balance_before
+    ).events
 
     assert (
         token.balanceOf(token_holder.address)
@@ -122,7 +104,12 @@ def test_unauth_recover_erc20(token, jumpgate, amount, token_holder, stranger):
 
     # try to recover tokens as a non-owner
     with reverts("Ownable: caller is not the owner"):
-        jumpgate.recoverERC20(token.address, token_holder.address, {"from": stranger})
+        jumpgate.recoverERC20(
+            token.address,
+            token_holder.address,
+            token.balanceOf(jumpgate.address),
+            {"from": stranger},
+        )
 
 
 def test_auth_recover_erc721(jumpgate, deployer, nft, nft_id, nft_holder):

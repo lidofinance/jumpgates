@@ -44,10 +44,14 @@ abstract contract AssetRecoverer is Ownable {
     /// @dev SafeERC20.safeTransfer doesn't return a bool as it performs an internal `require` check
     /// @param _token address of the ERC20 token that is being recovered
     /// @param _recipient address to transfer the tokens to
-    function recoverERC20(address _token, address _recipient) public onlyOwner {
-        uint256 amount = IERC20(_token).balanceOf(address(this));
-        SafeERC20.safeTransfer(IERC20(_token), _recipient, amount);
-        emit ERC20Recovered(_token, _recipient, amount);
+    /// @param _amount amount of tokens to transfer
+    function recoverERC20(
+        address _token,
+        address _recipient,
+        uint256 _amount
+    ) public onlyOwner {
+        SafeERC20.safeTransfer(IERC20(_token), _recipient, _amount);
+        emit ERC20Recovered(_token, _recipient, _amount);
     }
 
     /// @notice recover an ERC721 token on this contract's balance as the owner
