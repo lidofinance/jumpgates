@@ -4,7 +4,6 @@ import json
 import utils.log as log
 from utils.config import (
     SOLANA_WORMHOLE_CHAIN_ID,
-    TERRA_RANDOM_ADDRESS,
     TERRA_WORMHOLE_CHAIN_ID,
 )
 from utils.encode import encode_terra_address
@@ -83,34 +82,38 @@ def main():
 
     log.okay("Proceeding...")
 
-    # log.info("Deploying Jumpgate to Ropsten")
+    log.info(f"Deploying Jumpgate...")
 
-    # token = ROPSTEN_MOCK_ERC20
-    # bridge = ROPSTEN_WORMHOLE_TOKEN_BRIDGE
-    # recipientChain = TERRA_WORMHOLE_CHAIN_ID
-    # recipient = encode_terra_address(TERRA_RANDOM_ADDRESS)
-    # arbiterFee = 0
+    token = TOKEN
+    bridge = BRIDGE
+    recipientChain = RECIPIENT_CHAIN
+    recipient = encode_terra_address(RECIPIENT)
+    arbiterFee = ARBITER_FEE
 
-    # Jumpgate.deploy(
-    #     token,
-    #     bridge,
-    #     recipientChain,
-    #     recipient,
-    #     arbiterFee,
-    #     {"from": deployer},
-    #     publish_source=True,
-    # )
+    jumpgate = Jumpgate.deploy(
+        token,
+        bridge,
+        recipientChain,
+        recipient,
+        arbiterFee,
+        {"from": deployer},
+        publish_source=True,
+    )
 
-    # log.info("Jumpgate deployed successfully")
+    log.okay("Jumpgate deployed successfully!")
 
-    # with open(f"deployed-{network.show_active()}.json", "w") as outfile:
-    #     json.dump(
-    #         {
-    #             "token": token,
-    #             "bridge": bridge,
-    #             "recipientChain": recipientChain,
-    #             "recipient": TERRA_RANDOM_ADDRESS,
-    #             "arbiterFee": 0,
-    #         },
-    #         outfile,
-    #     )
+    deployed_filename = f"deployed-{network.show_active()}-{RECIPIENT}.json"
+    with open(deployed_filename, "w") as outfile:
+        json.dump(
+            {
+                "jumpgate": jumpgate.address,
+                "token": token,
+                "bridge": bridge,
+                "recipientChain": recipientChain,
+                "recipient": RECIPIENT,
+                "arbiterFee": arbiterFee,
+            },
+            outfile,
+        )
+
+    log.okay("Deploy data dumped to", deployed_filename)
