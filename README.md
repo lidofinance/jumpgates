@@ -62,11 +62,11 @@ Specify environment variables required for deployment. You can do this by copyin
 - `TOKEN` - address of the ERC20 token you want to transfer;
 - `BRIDGE` - address of the Wormhole Token Bridge;
 - `RECIPIENT_CHAIN` - Wormhole id of the target chain, e.g. `1` for Solana, `3` for Terra;
-- `RECIPIENT` - address of the recipient
+- `RECIPIENT` - address of the recipient;
 - `ARBITER_FEE` - bridge arbiter fee, defaults to 0.
 
 ### Step 2.
-Run the deploy script,
+Run the deploy script.
 ```bash
 $ brownie run scripts/deploy.py
 ```
