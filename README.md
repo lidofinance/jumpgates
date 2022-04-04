@@ -13,7 +13,7 @@
 Jumpgates facilitate cross-chain token transfers under the Lido DAO incentive programs. Although autonomous, jumpgates are meant to be part of the Easy Track Rewards Program pipeline.
 
 
-## Table of Contents
+## 📒 Table of Contents
 
 - [About jumpgates](#about-jumpgates)
 - [Getting started](#getting-started)
@@ -21,7 +21,7 @@ Jumpgates facilitate cross-chain token transfers under the Lido DAO incentive pr
 
 
   
-## About jumpgates
+## 🌀 About jumpgates
 
 A jumpgate is a simple contract that transfers tokens via a cross-chain token bridge, such as Wormhole, Terra Shuttle, etc. The parameters of the transportation (the token, recipient, bridge) are predefined and immutable for each invididual jumpgate which makes its operation safe and permissionless. Jumpgates also provide permissioned ways to recover ether, ERC20, ERC721 and ERC1155 tokens.
 
@@ -29,7 +29,7 @@ Ethereum-native Lido governance is seeking to incentivize the protocol adoption 
   
 For further details [read ADR](https://hackmd.io/snwPWGqBS-ax5Ur0A5Ix5w?view).
 
-## Getting started
+## 🏁 Getting started
 This project uses Brownie development framework. Learn more about [Brownie](https://eth-brownie.readthedocs.io/en/stable/index.html).
 ### Prerequisites
 - Python 3.8+
@@ -61,7 +61,7 @@ Specify your Etherscan API key. Don't forget to replace `%YOUR-ETHERSCAN-TOKEN% 
 $ export ETHERSCAN_TOKEN=%YOUR-ETHERSCAN-TOKEN% 
 ```
 
-## Deploying a jumpgate
+## 🚛 Deploying a jumpgate
 Before you proceed, please follow [Getting Started](#getting-started) instructions.
 
 ### Step 1.
