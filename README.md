@@ -11,15 +11,6 @@
 ![license GPL](https://img.shields.io/badge/license-GPL-green)
 
 Jumpgates facilitate cross-chain token transfers under the Lido DAO incentive programs. Although autonomous, jumpgates are meant to be part of the Easy Track Rewards Program pipeline.
-
-
-## 📒 Table of Contents
-
-- [About jumpgates](#about-jumpgates)
-- [Getting started](#getting-started)
-- [Deploying a jumpgate](#deploying-a-jumpgate)
-
-
   
 ## 🌀 About jumpgates
 
