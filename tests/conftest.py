@@ -1,12 +1,15 @@
 import pytest
-from brownie import Contract, Jumpgate, Destrudo
+from brownie import Contract, Jumpgate, Destrudo, accounts
 from utils.config import (
+    EASYTRACK,
+    EVM_SCRIPT_EXECUTOR,
     LDO_ADDRESS,
     LDO_HOLDER,
     MULTITOKEN_ID,
     NFT_ID,
     RARIBLE_MT_ADDRESS,
     RARIBLE_NFT_ADDRESS,
+    REWARD_PROGRAMS_REGISTRY,
     TERRA_RANDOM_ADDRESS,
     TERRA_WORMHOLE_CHAIN_ID,
     VITALIK,
@@ -103,3 +106,18 @@ def jumpgate(deployer, token, bridge):
         0,
         {"from": deployer},
     )
+
+
+@pytest.fixture
+def easytrack():
+    return Contract.from_explorer(EASYTRACK)
+
+
+@pytest.fixture
+def reward_program_registry():
+    return Contract.from_explorer(REWARD_PROGRAMS_REGISTRY)
+
+
+@pytest.fixture
+def evm_script_executor():
+    return accounts.at(EVM_SCRIPT_EXECUTOR, True)
