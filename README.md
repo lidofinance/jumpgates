@@ -12,24 +12,45 @@
 
 Jumpgates facilitate cross-chain token transfers under the Lido DAO incentive programs. Although autonomous, jumpgates are meant to be part of the Easy Track Rewards Program pipeline.
   
-## What are jumpgates?
+## About jumpgates
 
 A jumpgate is a simple contract that transfers tokens via a cross-chain token bridge, such as Wormhole, Terra Shuttle, etc. The parameters of the transportation (the token, recipient, bridge) are predefined and immutable for each invididual jumpgate which makes its operation safe and permissionless. Jumpgates also provide permissioned ways to recover ether, ERC20, ERC721 and ERC1155 tokens.
 
-### Which problem do they solve?  
 Ethereum-native Lido governance is seeking to incentivize the protocol adoption in other blockchains. Jumpgates reduce operational overhead associated with routine cross-chain token transfers by providing a permissionless way to bridge tokens. 
   
-### How do jumpgates work?
+For further details [read ADR](https://hackmd.io/snwPWGqBS-ax5Ur0A5Ix5w?view).
 
-A jumpgate contract features a public function that transfers all of its tokens to the cross-chain recipient via a token bridge. This public function accepts no arguments because the parameters necessary for the transfer are specified at the moment of deployment.
+## Getting started
+This project uses Brownie development framework. Learn more about [Brownie](https://eth-brownie.readthedocs.io/en/stable/index.html).
+### Prerequisites
+- Python 3.8+
 
-  
-Read ADR: https://hackmd.io/snwPWGqBS-ax5Ur0A5Ix5w?view
-
-## Development
-
+### Step 1.
+Create a Python virtual environment.
 ```bash
 $ python3 -m venv venv
+```
+### Step 2.
+Activate the virtual environment.
+```bash
 $ source venv/bin/activate
+```
+### Step 3.
+Install Python dependencies.
+```bash
 $ pip3 install -r requirements.txt
 ```
+### Step 4.
+Specify your Infura project id. Don't forget to replace `%YOUR-INFURA-PROJECT-ID%` below with your actual project id. Learn more about [Infura](https://infura.io/).
+```bash
+$ export WEB3_INFURA_PROJECT_ID=%YOUR-INFURA-PROJECT-ID% 
+```
+
+### Step 5 (optional).
+Specify your Etherscan API key. Don't forget to replace `%YOUR-ETHERSCAN-TOKEN% ` below with your actual API key. Learn more about [Etherscan API](https://etherscan.io/apis).
+```bash
+$ export ETHERSCAN_TOKEN=%YOUR-ETHERSCAN-TOKEN% 
+```
+
+## Deploying a jumpgate
+
