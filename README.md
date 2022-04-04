@@ -83,3 +83,10 @@ If you've specified all the necessary variables, they will be displayed in your 
 <img alt="image" src="https://user-images.githubusercontent.com/39704351/161552953-23b81a40-f468-4196-9c81-89ea8a5745e8.png">
 
 If all is correct, you should be able to see your transaction hash and the address of the jumpgate in the terminal. You will also find the deployment parameters in a newly created JSON file in the root directory that is named `deployed-%NETWORK%-%RECIPIENT%.json`.
+
+### Step 3 (optional).
+Check your deployment. Specify the newly deployed jumpgate address in `JUMPGATE` in `.env` and run the check script.
+```bash
+$ brownie run scripts/check_jumpgate.py
+```
+You should be able to tell whether the deployment was successful by the outputs in the terminal.
