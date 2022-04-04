@@ -14,7 +14,7 @@ Jumpgates facilitate cross-chain token transfers under the Lido DAO incentive pr
   
 ## What are jumpgates?
 
-A jumpgate is a simple contract that transfers tokens via cross-chain token bridges, such Wormhole, Terra Shuttle, etc. The parameters of the transportation (such as the token, recipient, bridge) are predefined and immutable for each invididual jumpgate which makes its operation safe and permissionless. Jumpgates also provide authorized ways to recover ether, ERC20, ERC721 and ERC1155 tokens.
+A jumpgate is a simple contract that transfers tokens via a cross-chain token bridge, such Wormhole, Terra Shuttle, etc. The parameters of the transportation (such as the token, recipient, bridge) are predefined and immutable for each invididual jumpgate which makes its operation safe and permissionless. Jumpgates also provide permissioned ways to recover ether, ERC20, ERC721 and ERC1155 tokens.
 
 ### Which problem do they solve?  
 Ethereum-native Lido governance is seeking to incentivize the protocol adoption in other blockchains. Jumpgates reduce operational overhead associated with routine cross-chain token transfers by providing a permissionless way to bridge tokens. 
