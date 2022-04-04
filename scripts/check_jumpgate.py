@@ -1,5 +1,6 @@
 from brownie import network, accounts, Contract
 import json
+from utils.env import get_env
 
 import utils.log as log
 from utils.config import (
@@ -7,7 +8,6 @@ from utils.config import (
     TERRA_WORMHOLE_CHAIN_ID,
 )
 from utils.encode import encode_terra_address, get_address_encoder
-from utils.secrets import get_env
 
 NETWORK = get_env("NETWORK")
 
