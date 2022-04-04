@@ -53,4 +53,25 @@ $ export ETHERSCAN_TOKEN=%YOUR-ETHERSCAN-TOKEN%
 ```
 
 ## Deploying a jumpgate
+Before you proceed, please follow [Getting Started](#getting-started) instructions.
 
+### Step 1.
+Specify environment variables required for deployment. You can do this by copying the contents of `sample.env` into `.env` and filling it out. The necessary variables are listed below,
+- `PRIVATE_KEY` - your private key;
+- `NETWORK` - name of the network you want to deploy a jumpgate to, e.g., `mainnet`, `goerli`, `ropsten`, etc.;
+- `TOKEN` - address of the ERC20 token you want to transfer;
+- `BRIDGE` - address of the Wormhole Token Bridge;
+- `RECIPIENT_CHAIN` - Wormhole id of the target chain, e.g. `1` for Solana, `3` for Terra;
+- `RECIPIENT` - address of the recipient
+- `ARBITER_FEE` - bridge arbiter fee, defaults to 0.
+
+### Step 2.
+Run the deploy script,
+```bash
+$ brownie run scripts/deploy.py
+```
+If you've specified all the necessary variables, they will be displayed in your terminal. Confirm them and enter 'y' to proceed. E.g.,
+<img alt="image" src="https://user-images.githubusercontent.com/39704351/161552953-23b81a40-f468-4196-9c81-89ea8a5745e8.png">
+
+### Step 3.
+If all is correct, you should be able to see your transaction hash and the address of the jumpgate in the terminal. You will also find the deployment parameters in a newly created JSON file in the root directory that is named `deployed-%NETWORK%-%RECIPIENT%.json`.
