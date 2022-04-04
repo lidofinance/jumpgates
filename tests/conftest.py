@@ -1,6 +1,7 @@
 import pytest
 from brownie import Contract, Jumpgate, Destrudo, accounts
 from utils.config import (
+    ADD_REWARD_PROGRAM_EVM_SCRIPT_FACTORY,
     EASYTRACK,
     EVM_SCRIPT_EXECUTOR,
     LDO_ADDRESS,
@@ -12,6 +13,7 @@ from utils.config import (
     REWARD_PROGRAMS_REGISTRY,
     TERRA_RANDOM_ADDRESS,
     TERRA_WORMHOLE_CHAIN_ID,
+    TOP_UP_REWARD_PROGRAM_EVM_SCRIPT_FACTORY,
     VITALIK,
     WORMHOLE_TOKEN_BRIDGE_ADDRESS,
 )
@@ -119,5 +121,10 @@ def reward_program_registry():
 
 
 @pytest.fixture
-def evm_script_executor():
-    return accounts.at(EVM_SCRIPT_EXECUTOR, True)
+def add_reward_program_evm_script_factory():
+    return Contract.from_explorer(ADD_REWARD_PROGRAM_EVM_SCRIPT_FACTORY)
+
+
+@pytest.fixture
+def top_up_reward_program_evm_script_factory():
+    return Contract.from_explorer(TOP_UP_REWARD_PROGRAM_EVM_SCRIPT_FACTORY)

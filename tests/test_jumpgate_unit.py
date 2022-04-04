@@ -1,5 +1,6 @@
 from brownie import Jumpgate, reverts
 from utils.config import (
+    BRIDGE_DUST_CUTOFF,
     TERRA_WORMHOLE_CHAIN_ID,
     TERRA_RANDOM_ADDRESS,
 )
@@ -164,9 +165,6 @@ def test_send_ERC1155(jumpgate, multitoken, multitoken_id, multitoken_holder):
             "",
             {"from": multitoken_holder},
         )
-
-
-BRIDGE_DUST_CUTOFF = 10**10
 
 
 @pytest.mark.parametrize(
