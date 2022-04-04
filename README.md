@@ -25,29 +25,26 @@ This project uses Brownie development framework. Learn more about [Brownie](http
 ### Prerequisites
 - Python 3.8+
 
-### Step 1.
-Create a Python virtual environment.
+#### Step 1. Create a Python virtual environment.
 ```bash
 $ python3 -m venv venv
 ```
-### Step 2.
-Activate the virtual environment.
+#### Step 2. Activate the virtual environment.
 ```bash
 $ source venv/bin/activate
 ```
-### Step 3.
-Install Python dependencies.
+#### Step 3. Install Python dependencies.
 ```bash
 $ pip3 install -r requirements.txt
 ```
-### Step 4.
-Specify your Infura project id. Don't forget to replace `%YOUR-INFURA-PROJECT-ID%` below with your actual project id. Learn more about [Infura](https://infura.io/).
+#### Step 4. Specify your Infura project id.
+Replace `%YOUR-INFURA-PROJECT-ID%` below with your actual project id. Learn more about [Infura](https://infura.io/).
 ```bash
 $ export WEB3_INFURA_PROJECT_ID=%YOUR-INFURA-PROJECT-ID% 
 ```
 
-### Step 5 (optional).
-Specify your Etherscan API key. Don't forget to replace `%YOUR-ETHERSCAN-TOKEN% ` below with your actual API key. Learn more about [Etherscan API](https://etherscan.io/apis).
+#### Step 5 (optional). Specify your Etherscan API key.
+Replace `%YOUR-ETHERSCAN-TOKEN%` below with your actual API key. Learn more about [Etherscan API](https://etherscan.io/apis).
 ```bash
 $ export ETHERSCAN_TOKEN=%YOUR-ETHERSCAN-TOKEN% 
 ```
@@ -55,8 +52,8 @@ $ export ETHERSCAN_TOKEN=%YOUR-ETHERSCAN-TOKEN%
 ## 🚛 Deploying a jumpgate
 Before you proceed, please follow [Getting Started](#getting-started) instructions.
 
-### Step 1.
-Specify environment variables required for deployment. You can do this by copying the contents of `sample.env` into `.env` and filling it out. The necessary variables are listed below,
+#### Step 1. Specify environment variables.
+You can do this by copying the contents of `sample.env` into `.env` and filling it out. The necessary variables are listed below,
 - `PRIVATE_KEY` - your private key;
 - `NETWORK` - name of the network you want to deploy a jumpgate to, e.g., `mainnet`, `goerli`, `ropsten`, etc.;
 - `TOKEN` - address of the ERC20 token you want to transfer;
@@ -65,18 +62,20 @@ Specify environment variables required for deployment. You can do this by copyin
 - `RECIPIENT` - address of the recipient;
 - `ARBITER_FEE` - bridge arbiter fee, defaults to 0.
 
-### Step 2.
-Run the deploy script.
+#### Step 2. Run the deploy script.
 ```bash
 $ brownie run scripts/deploy.py
 ```
 If you've specified all the necessary variables, they will be displayed in your terminal. Confirm them and enter 'y' to proceed. E.g.,
+
+
 <img alt="image" src="https://user-images.githubusercontent.com/39704351/161552953-23b81a40-f468-4196-9c81-89ea8a5745e8.png">
+
 
 If all is correct, you should be able to see your transaction hash and the address of the jumpgate in the terminal. You will also find the deployment parameters in a newly created JSON file in the root directory that is named `deployed-%NETWORK%-%RECIPIENT%.json`.
 
-### Step 3 (optional).
-Check your deployment. Specify the newly deployed jumpgate address in `JUMPGATE` in `.env` and run the check script.
+#### Step 3 (optional). Check your deployment.
+Specify the newly deployed jumpgate address in `JUMPGATE` in `.env` and run the check script.
 ```bash
 $ brownie run scripts/check_jumpgate.py
 ```
