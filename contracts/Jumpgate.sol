@@ -12,19 +12,19 @@ import "../interfaces/IWormholeTokenBridge.sol";
 /// @dev `IWormholeTokenBridge` and the logic in `_callBridgeTransfer` are specific to Wormhole Token Bridge
 contract Jumpgate is AssetRecoverer {
     /// ERC20 token to be bridged
-    IERC20 public token;
+    IERC20 public immutable token;
 
     /// Wormhole token bridge
-    IWormholeTokenBridge public bridge;
+    IWormholeTokenBridge public immutable bridge;
 
     /// Wormhole id of the target chain
-    uint16 public recipientChain;
+    uint16 public immutable recipientChain;
 
     /// bytes32-encoded recipient address on the target chain
-    bytes32 public recipient;
+    bytes32 public immutable recipient;
 
     /// Wormhole arbiter fee
-    uint256 public arbiterFee;
+    uint256 public immutable arbiterFee;
 
     constructor(
         address _token,
