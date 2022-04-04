@@ -3,7 +3,6 @@ from brownie import Contract, Jumpgate, Destrudo, accounts
 from utils.config import (
     ADD_REWARD_PROGRAM_EVM_SCRIPT_FACTORY,
     EASYTRACK,
-    EVM_SCRIPT_EXECUTOR,
     LDO_ADDRESS,
     LDO_HOLDER,
     MULTITOKEN_ID,

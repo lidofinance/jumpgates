@@ -26,6 +26,7 @@ def test_full_flow(
     # make sure reward programs use the same token as Jumpgate
     assert top_up_reward_program_evm_script_factory.rewardToken() == jumpgate.token()
 
+    jumpgate_balance_before = token.balanceOf(jumpgate.address)
     amount = to_wei(1, "ether")
 
     # top up Jumpgate
@@ -35,7 +36,7 @@ def test_full_flow(
         encode_single("(address[],uint256[])", [[jumpgate.address], [amount]]),
     )
 
-    assert token.balanceOf(jumpgate.address) == amount
+    assert token.balanceOf(jumpgate.address) == jumpgate_balance_before + amount
 
     bridge_balance_before = token.balanceOf(bridge.address)
 
