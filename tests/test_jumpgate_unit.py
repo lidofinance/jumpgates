@@ -1,11 +1,13 @@
 from brownie import Jumpgate, reverts
 from utils.config import (
     BRIDGE_DUST_CUTOFF,
+    SOLANA_RANDOM_ADDRESS,
+    SOLANA_WORMHOLE_CHAIN_ID,
     TERRA_WORMHOLE_CHAIN_ID,
     TERRA_RANDOM_ADDRESS,
 )
 from utils.constants import one_quintillion
-from utils.encode import encode_terra_address
+from utils.encode import encode_solana_address, encode_terra_address
 import pytest
 
 
@@ -24,6 +26,23 @@ def test_terra_deploy_parameters(token, bridge, deployer):
     assert terra_jumpgate.recipientChain() == TERRA_WORMHOLE_CHAIN_ID
     assert terra_jumpgate.recipient() == encode_terra_address(TERRA_RANDOM_ADDRESS)
     assert terra_jumpgate.arbiterFee() == 0
+
+
+def test_solana_deploy_parameters(token, bridge, deployer):
+    solana_jumpgate = Jumpgate.deploy(
+        token.address,
+        bridge.address,
+        SOLANA_WORMHOLE_CHAIN_ID,
+        encode_solana_address(SOLANA_RANDOM_ADDRESS),
+        0,
+        {"from": deployer},
+    )
+
+    assert solana_jumpgate.token() == token.address
+    assert solana_jumpgate.bridge() == bridge.address
+    assert solana_jumpgate.recipientChain() == SOLANA_WORMHOLE_CHAIN_ID
+    assert solana_jumpgate.recipient() == encode_solana_address(SOLANA_RANDOM_ADDRESS)
+    assert solana_jumpgate.arbiterFee() == 0
 
 
 @pytest.mark.parametrize("amount", [0, 1, one_quintillion])
