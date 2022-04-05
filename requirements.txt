@@ -1,8 +1,7 @@
+eth_brownie==1.18.1
 bech32==1.2.0
 Brownie==0.5.1
 eth_abi==2.1.1
-eth_brownie==1.18.1
 eth_utils==1.10.0
 pytest==6.2.5
-python-dotenv==0.20.0
-solana==0.23.1
+solana==0.18.3
