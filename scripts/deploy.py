@@ -104,7 +104,7 @@ def main():
 
     log.okay("Jumpgate deployed successfully!")
 
-    deployed_filename = f"deployed-{network.show_active()}-{RECIPIENT}.json"
+    deployed_filename = f"./deployed/{network.show_active()}-{RECIPIENT}.json"
     with open(deployed_filename, "w") as outfile:
         json.dump(
             {
