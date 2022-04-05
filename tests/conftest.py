@@ -1,3 +1,4 @@
+from aiohttp import request
 import pytest
 from brownie import Contract, Jumpgate, Destrudo, accounts
 from utils.config import (
@@ -10,6 +11,8 @@ from utils.config import (
     RARIBLE_MT_ADDRESS,
     RARIBLE_NFT_ADDRESS,
     REWARD_PROGRAMS_REGISTRY,
+    SOLANA_RANDOM_ADDRESS,
+    SOLANA_WORMHOLE_CHAIN_ID,
     TERRA_RANDOM_ADDRESS,
     TERRA_WORMHOLE_CHAIN_ID,
     TOP_UP_REWARD_PROGRAM_EVM_SCRIPT_FACTORY,
@@ -25,18 +28,34 @@ def isolation(fn_isolation):
 
 
 @pytest.fixture(scope="session")
-def deployer(accounts):
+def owner(accounts):
     return accounts[0]
 
 
 @pytest.fixture(scope="session")
-def stranger(accounts):
+def non_owner(accounts):
     return accounts[1]
 
 
 @pytest.fixture(scope="session")
-def another_stranger(accounts):
+def stranger(accounts):
     return accounts[2]
+
+
+# test as the owner and a non-owner
+@pytest.fixture(scope="session", params=["owner", "non_owner"])
+def sender(request):
+    return request.getfixturevalue(request.param)
+
+
+@pytest.fixture(
+    params=[
+        (TERRA_WORMHOLE_CHAIN_ID, TERRA_RANDOM_ADDRESS),
+        (SOLANA_WORMHOLE_CHAIN_ID, SOLANA_RANDOM_ADDRESS),
+    ]
+)
+def deploy_params(request):
+    return request.param
 
 
 # ERC20
@@ -83,8 +102,8 @@ def multitoken_holder(accounts):
 
 
 @pytest.fixture(scope="function")
-def destrudo(deployer):
-    return Destrudo.deploy({"from": deployer})
+def destrudo(owner):
+    return Destrudo.deploy({"from": owner})
 
 
 @pytest.fixture
@@ -98,14 +117,14 @@ def bridge(interface):
 
 
 @pytest.fixture(scope="function")
-def jumpgate(deployer, token, bridge):
+def jumpgate(owner, token, bridge):
     return Jumpgate.deploy(
         token.address,
         bridge.address,
         TERRA_WORMHOLE_CHAIN_ID,
         encode_terra_address(TERRA_RANDOM_ADDRESS),
         0,
-        {"from": deployer},
+        {"from": owner},
     )
 
 

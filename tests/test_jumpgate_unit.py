@@ -1,86 +1,68 @@
 from brownie import Jumpgate, reverts
-from utils.config import (
-    BRIDGE_DUST_CUTOFF,
-    SOLANA_RANDOM_ADDRESS,
-    SOLANA_WORMHOLE_CHAIN_ID,
-    TERRA_WORMHOLE_CHAIN_ID,
-    TERRA_RANDOM_ADDRESS,
-)
+from utils.config import BRIDGE_DUST_CUTOFF
 from utils.constants import one_quintillion
-from utils.encode import encode_solana_address, encode_terra_address
+from utils.encode import get_address_encoder
 import pytest
 
 
-def test_terra_deploy_parameters(token, bridge, deployer):
-    terra_jumpgate = Jumpgate.deploy(
+def test_deploy_parameters(token, bridge, owner, deploy_params):
+    (recipientChain, recipient) = deploy_params
+
+    encode = get_address_encoder(recipientChain)
+    recipient_encoded = encode(recipient)
+    arbiter_fee = 0
+
+    jumpgate = Jumpgate.deploy(
         token.address,
         bridge.address,
-        TERRA_WORMHOLE_CHAIN_ID,
-        encode_terra_address(TERRA_RANDOM_ADDRESS),
-        0,
-        {"from": deployer},
+        recipientChain,
+        recipient_encoded,
+        arbiter_fee,
+        {"from": owner},
     )
 
-    assert terra_jumpgate.token() == token.address
-    assert terra_jumpgate.bridge() == bridge.address
-    assert terra_jumpgate.recipientChain() == TERRA_WORMHOLE_CHAIN_ID
-    assert terra_jumpgate.recipient() == encode_terra_address(TERRA_RANDOM_ADDRESS)
-    assert terra_jumpgate.arbiterFee() == 0
-
-
-def test_solana_deploy_parameters(token, bridge, deployer):
-    solana_jumpgate = Jumpgate.deploy(
-        token.address,
-        bridge.address,
-        SOLANA_WORMHOLE_CHAIN_ID,
-        encode_solana_address(SOLANA_RANDOM_ADDRESS),
-        0,
-        {"from": deployer},
-    )
-
-    assert solana_jumpgate.token() == token.address
-    assert solana_jumpgate.bridge() == bridge.address
-    assert solana_jumpgate.recipientChain() == SOLANA_WORMHOLE_CHAIN_ID
-    assert solana_jumpgate.recipient() == encode_solana_address(SOLANA_RANDOM_ADDRESS)
-    assert solana_jumpgate.arbiterFee() == 0
+    assert jumpgate.token() == token.address
+    assert jumpgate.bridge() == bridge.address
+    assert jumpgate.recipientChain() == recipientChain
+    assert jumpgate.recipient() == recipient_encoded
+    assert jumpgate.arbiterFee() == arbiter_fee
 
 
 @pytest.mark.parametrize("amount", [0, 1, one_quintillion])
-def test_auth_recover_ether(
-    jumpgate, destrudo, amount, deployer, stranger, another_stranger
+def test_recover_ether(
+    jumpgate,
+    destrudo,
+    amount,
+    sender,
+    stranger,
 ):
     # top up jumpgate balance using a self-destructable contract
     jumpgate_balance_before = jumpgate.balance()
-    destrudo.destructSelf(jumpgate.address, {"value": amount, "from": stranger})
+    destrudo.destructSelf(jumpgate.address, {"value": amount, "from": sender})
     assert jumpgate.balance() == jumpgate_balance_before + amount
 
-    # recover ether as the owner to some recipient
     jumpgate_balance_before = jumpgate.balance()
-    recipient_balance_before = another_stranger.balance()
-    events = jumpgate.recoverEther(another_stranger.address, {"from": deployer}).events
+    # recovering to stranger to avoid gas calculations
+    recipient = stranger
+    recipient_balance_before = recipient.balance()
 
-    assert (
-        another_stranger.balance() == jumpgate_balance_before + recipient_balance_before
-    )
-    assert "EtherRecovered" in events
-    assert events["EtherRecovered"]["_recipient"] == another_stranger.address
-    assert events["EtherRecovered"]["_amount"] == jumpgate_balance_before
+    is_owner = jumpgate.owner() == sender.address
+    # recover as the owner
+    if is_owner:
+        tx = jumpgate.recoverEther(recipient.address, {"from": sender})
+
+        assert recipient.balance() == jumpgate_balance_before + recipient_balance_before
+        assert "EtherRecovered" in tx.events
+        assert tx.events["EtherRecovered"]["_recipient"] == recipient.address
+        assert tx.events["EtherRecovered"]["_amount"] == jumpgate_balance_before
+    # attempt to recover as a non-owner
+    else:
+        with reverts("Ownable: caller is not the owner"):
+            jumpgate.recoverEther(recipient.address, {"from": sender})
 
 
 @pytest.mark.parametrize("amount", [0, 1, one_quintillion])
-def test_unauth_recover_ether(jumpgate, destrudo, amount, stranger, another_stranger):
-    # top up jumpgate balance using a self-destructable contract
-    jumpgate_balance_before = jumpgate.balance()
-    destrudo.destructSelf(jumpgate.address, {"value": amount, "from": stranger})
-    assert jumpgate.balance() == jumpgate_balance_before + amount
-
-    # try to recover ETH as a non-owner
-    with reverts("Ownable: caller is not the owner"):
-        jumpgate.recoverEther(another_stranger.address, {"from": another_stranger})
-
-
-@pytest.mark.parametrize("amount", [0, 1, one_quintillion])
-def test_auth_recover_erc20(token, jumpgate, amount, token_holder):
+def test_recover_erc20(token, jumpgate, sender, token_holder, amount):
     # send tokens to jumpgate
     holder_balance_before = token.balanceOf(token_holder.address)
     jumpgate_balance_before = token.balanceOf(jumpgate.address)
@@ -91,84 +73,76 @@ def test_auth_recover_erc20(token, jumpgate, amount, token_holder):
     # recover tokens
     holder_balance_before = token.balanceOf(token_holder.address)
     jumpgate_balance_before = token.balanceOf(jumpgate.address)
-    events = jumpgate.recoverERC20(
-        token.address, token_holder.address, jumpgate_balance_before
-    ).events
 
-    assert (
-        token.balanceOf(token_holder.address)
-        == holder_balance_before + jumpgate_balance_before
-    )
-    assert token.balanceOf(jumpgate.address) == 0
-
-    if amount > 0:
-        assert "Transfer" in events
-        assert events["Transfer"]["_from"] == jumpgate.address
-        assert events["Transfer"]["_to"] == token_holder.address
-        assert events["Transfer"]["_amount"] == jumpgate_balance_before
-
-    assert "ERC20Recovered" in events
-    assert events["ERC20Recovered"]["_token"] == token.address
-    assert events["ERC20Recovered"]["_recipient"] == token_holder.address
-    assert events["ERC20Recovered"]["_amount"] == jumpgate_balance_before
-
-
-@pytest.mark.parametrize("amount", [0, 1, one_quintillion])
-def test_unauth_recover_erc20(token, jumpgate, amount, token_holder, stranger):
-    # send tokens to jumpgate
-    holder_balance_before = token.balanceOf(token_holder.address)
-    jumpgate_balance_before = token.balanceOf(jumpgate.address)
-    token.transfer(jumpgate.address, amount, {"from": token_holder})
-    assert token.balanceOf(token_holder.address) == holder_balance_before - amount
-    assert token.balanceOf(jumpgate.address) == jumpgate_balance_before + amount
-
-    # try to recover tokens as a non-owner
-    with reverts("Ownable: caller is not the owner"):
-        jumpgate.recoverERC20(
+    is_owner = jumpgate.owner() == sender.address
+    # recover as the owner
+    if is_owner:
+        tx = jumpgate.recoverERC20(
             token.address,
             token_holder.address,
-            token.balanceOf(jumpgate.address),
-            {"from": stranger},
+            jumpgate_balance_before,
+            {"from": sender},
         )
 
+        assert (
+            token.balanceOf(token_holder.address)
+            == holder_balance_before + jumpgate_balance_before
+        )
+        assert token.balanceOf(jumpgate.address) == 0
 
-def test_auth_recover_erc721(jumpgate, deployer, nft, nft_id, nft_holder):
+        if amount > 0:
+            assert "Transfer" in tx.events
+            assert tx.events["Transfer"]["_from"] == jumpgate.address
+            assert tx.events["Transfer"]["_to"] == token_holder.address
+            assert tx.events["Transfer"]["_amount"] == jumpgate_balance_before
+
+        assert "ERC20Recovered" in tx.events
+        assert tx.events["ERC20Recovered"]["_token"] == token.address
+        assert tx.events["ERC20Recovered"]["_recipient"] == token_holder.address
+        assert tx.events["ERC20Recovered"]["_amount"] == jumpgate_balance_before
+    # attempt to recover tokens as a non-owner
+    else:
+        with reverts("Ownable: caller is not the owner"):
+            jumpgate.recoverERC20(
+                token.address,
+                token_holder.address,
+                token.balanceOf(jumpgate.address),
+                {"from": sender},
+            )
+
+
+def test_recover_erc721(jumpgate, sender, nft, nft_id, nft_holder):
     # make sure nft_holder still owns the nft
     assert nft.ownerOf(nft_id) == nft_holder
     # transfer the nft to jumpgate
     nft.transferFrom(nft_holder.address, jumpgate.address, nft_id, {"from": nft_holder})
     assert nft.ownerOf(nft_id) == jumpgate.address
+
+    is_owner = jumpgate.owner() == sender.address
 
     # recover the nft to deployer as the owner
-    events = jumpgate.recoverERC721(
-        nft.address, nft_id, deployer.address, {"from": deployer}
-    ).events
-
-    assert nft.ownerOf(nft_id) == deployer.address
-
-    assert "Transfer" in events
-    assert events["Transfer"]["from"] == jumpgate.address
-    assert events["Transfer"]["to"] == deployer.address
-    assert events["Transfer"]["tokenId"] == nft_id
-
-    assert "ERC721Recovered" in events
-    assert events["ERC721Recovered"]["_token"] == nft.address
-    assert events["ERC721Recovered"]["_tokenId"] == nft_id
-    assert events["ERC721Recovered"]["_recipient"] == deployer.address
-
-
-def test_unauth_recover_erc721(jumpgate, deployer, stranger, nft, nft_id, nft_holder):
-    # make sure nft_holder still owns the nft
-    assert nft.ownerOf(nft_id) == nft_holder
-    # transfer the nft to jumpgate
-    nft.transferFrom(nft_holder.address, jumpgate.address, nft_id, {"from": nft_holder})
-    assert nft.ownerOf(nft_id) == jumpgate.address
-
-    # try to recover the nft to deployer as a non-owner
-    with reverts("Ownable: caller is not the owner"):
-        jumpgate.recoverERC721(
-            nft.address, nft_id, deployer.address, {"from": stranger}
+    if is_owner:
+        tx = jumpgate.recoverERC721(
+            nft.address, nft_id, sender.address, {"from": sender}
         )
+
+        assert nft.ownerOf(nft_id) == sender.address
+
+        assert "Transfer" in tx.events
+        assert tx.events["Transfer"]["from"] == jumpgate.address
+        assert tx.events["Transfer"]["to"] == sender.address
+        assert tx.events["Transfer"]["tokenId"] == nft_id
+
+        assert "ERC721Recovered" in tx.events
+        assert tx.events["ERC721Recovered"]["_token"] == nft.address
+        assert tx.events["ERC721Recovered"]["_tokenId"] == nft_id
+        assert tx.events["ERC721Recovered"]["_recipient"] == sender.address
+    # attempt to recover as a non-owner
+    else:
+        with reverts("Ownable: caller is not the owner"):
+            jumpgate.recoverERC721(
+                nft.address, nft_id, sender.address, {"from": sender}
+            )
 
 
 def test_send_ERC1155(jumpgate, multitoken, multitoken_id, multitoken_holder):
@@ -197,27 +171,27 @@ def test_bridge_tokens(jumpgate, token, amount, token_holder, bridge):
 
     bridge_balance_before = token.balanceOf(bridge.address)
     # activate jumpgate
-    events = jumpgate.bridgeTokens().events
+    tx = jumpgate.bridgeTokens()
 
-    assert "Approval" in events
-    assert events["Approval"]["_owner"] == jumpgate.address
-    assert events["Approval"]["_spender"] == bridge.address
-    assert events["Approval"]["_amount"] == amount
+    assert "Approval" in tx.events
+    assert tx.events["Approval"]["_owner"] == jumpgate.address
+    assert tx.events["Approval"]["_spender"] == bridge.address
+    assert tx.events["Approval"]["_amount"] == amount
 
     # Wormhole Bridge ignores dust due to the decimal shift
     if amount < BRIDGE_DUST_CUTOFF:
-        assert "Transfer" not in events
+        assert "Transfer" not in tx.events
     else:
-        assert "Transfer" in events
-        assert events["Transfer"]["_from"] == jumpgate.address
-        assert events["Transfer"]["_to"] == bridge.address
-        assert events["Transfer"]["_amount"] == amount
+        assert "Transfer" in tx.events
+        assert tx.events["Transfer"]["_from"] == jumpgate.address
+        assert tx.events["Transfer"]["_to"] == bridge.address
+        assert tx.events["Transfer"]["_amount"] == amount
 
         assert token.balanceOf(jumpgate.address) == 0
         assert token.balanceOf(bridge.address) == bridge_balance_before + amount
 
-    assert "LogMessagePublished" in events
-    assert events["LogMessagePublished"]["sender"] == bridge.address
-    assert events["LogMessagePublished"]["sequence"] > 0
-    assert events["LogMessagePublished"]["nonce"] == 0
-    assert events["LogMessagePublished"]["consistencyLevel"] == 15
+    assert "LogMessagePublished" in tx.events
+    assert tx.events["LogMessagePublished"]["sender"] == bridge.address
+    assert tx.events["LogMessagePublished"]["sequence"] >= 0
+    assert tx.events["LogMessagePublished"]["nonce"] == 0
+    assert tx.events["LogMessagePublished"]["consistencyLevel"] == 15

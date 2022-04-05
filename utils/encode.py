@@ -3,7 +3,7 @@ import bech32
 from brownie import web3
 from solana import publickey
 
-from utils.config import TERRA_WORMHOLE_CHAIN_ID
+from utils.config import SOLANA_WORMHOLE_CHAIN_ID, TERRA_WORMHOLE_CHAIN_ID
 
 
 def zeropad(arr, n):
@@ -25,4 +25,6 @@ def encode_solana_address(native_solana_address):
 def get_address_encoder(chain):
     if chain == TERRA_WORMHOLE_CHAIN_ID:
         return encode_terra_address
+    if chain == SOLANA_WORMHOLE_CHAIN_ID:
+        return encode_solana_address
     raise f"Unsupported chain: {chain}"

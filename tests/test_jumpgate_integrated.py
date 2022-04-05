@@ -61,6 +61,6 @@ def test_full_flow(
 
     assert "LogMessagePublished" in events
     assert events["LogMessagePublished"]["sender"] == bridge.address
-    assert events["LogMessagePublished"]["sequence"] > 0
+    assert events["LogMessagePublished"]["sequence"] >= 0
     assert events["LogMessagePublished"]["nonce"] == 0
     assert events["LogMessagePublished"]["consistencyLevel"] == 15
