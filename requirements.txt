@@ -1,4 +1,4 @@
-eth_brownie==1.18.1
+eth_brownie==1.17.2
 bech32==1.2.0
 Brownie==0.5.1
 eth_abi==2.1.1
