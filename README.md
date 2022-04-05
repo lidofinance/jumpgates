@@ -44,6 +44,8 @@ $ source venv/bin/activate
 $ pip3 install -r requirements.txt
 ```
 
+Note! The bulk installation may fail due to incompatible version of the `websockets` package. In this case, try installing the packages one by one.
+
 #### Step 4. Specify your Infura project id.
 
 Replace `%YOUR-INFURA-PROJECT-ID%` below with your actual project id. Learn more about [Infura](https://infura.io/).
