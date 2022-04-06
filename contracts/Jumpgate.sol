@@ -11,6 +11,14 @@ import "../interfaces/IWormholeTokenBridge.sol";
 /// @notice Transfer an ERC20 token using a Wormhole token bridge with pre-determined parameters
 /// @dev `IWormholeTokenBridge` and the logic in `_callBridgeTransfer` are specific to Wormhole Token Bridge
 contract Jumpgate is AssetRecoverer {
+    event JumpgateCreated(
+        address indexed _token,
+        address indexed _bridge,
+        uint16 _recipientChain,
+        bytes32 _recipient,
+        uint256 _arbiterFee
+    );
+
     event TokensBridged(
         address indexed _token,
         address indexed _bridge,
@@ -49,6 +57,14 @@ contract Jumpgate is AssetRecoverer {
         recipientChain = _recipientChain;
         recipient = _recipient;
         arbiterFee = _arbiterFee;
+
+        emit JumpgateCreated(
+            _token,
+            _bridge,
+            _recipientChain,
+            _recipient,
+            _arbiterFee
+        );
     }
 
     /// @notice transfer all of the tokens on this contract's balance to the cross-chain recipient
