@@ -92,30 +92,30 @@ def main():
     recipient = encode_address(RECIPIENT)
     arbiterFee = ARBITER_FEE
 
-    # jumpgate = Jumpgate.deploy(
-    #     token,
-    #     bridge,
-    #     recipientChain,
-    #     recipient,
-    #     arbiterFee,
-    #     {"from": deployer},
-    #     publish_source=True,
-    # )
+    jumpgate = Jumpgate.deploy(
+        token,
+        bridge,
+        recipientChain,
+        recipient,
+        arbiterFee,
+        {"from": deployer},
+        publish_source=True,
+    )
 
-    # log.okay("Jumpgate deployed successfully!")
+    log.okay("Jumpgate deployed successfully!")
 
-    # deployed_filename = f"./deployed/{network.show_active()}-{RECIPIENT}.json"
-    # with open(deployed_filename, "w") as outfile:
-    #     json.dump(
-    #         {
-    #             "jumpgate": jumpgate.address,
-    #             "token": token,
-    #             "bridge": bridge,
-    #             "recipientChain": recipientChain,
-    #             "recipient": RECIPIENT,
-    #             "arbiterFee": arbiterFee,
-    #         },
-    #         outfile,
-    #     )
+    deployed_filename = f"./deployed/{network.show_active()}-{RECIPIENT}.json"
+    with open(deployed_filename, "w") as outfile:
+        json.dump(
+            {
+                "jumpgate": jumpgate.address,
+                "token": token,
+                "bridge": bridge,
+                "recipientChain": recipientChain,
+                "recipient": RECIPIENT,
+                "arbiterFee": arbiterFee,
+            },
+            outfile,
+        )
 
-    # log.okay("Deploy data dumped to", deployed_filename)
+    log.okay("Deploy data dumped to", deployed_filename)
