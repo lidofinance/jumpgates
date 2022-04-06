@@ -62,7 +62,7 @@ $ export ETHERSCAN_TOKEN=%YOUR-ETHERSCAN-TOKEN%
 
 ## 🚛 Deploying a jumpgate
 
-Before you proceed, please follow [Getting Started](#getting-started) instructions.
+Before you proceed, please follow [Getting Started](#🏁-Getting-started) instructions.
 
 #### Step 1. Specify environment variables.
 
