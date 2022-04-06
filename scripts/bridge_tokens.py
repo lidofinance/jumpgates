@@ -1,4 +1,5 @@
 from brownie import network, accounts, Contract
+from scripts.deploy import DEPLOYER
 from utils.env import get_env
 
 import utils.log as log
@@ -12,7 +13,7 @@ SUPPORTED_CHAINS = [TERRA_WORMHOLE_CHAIN_ID, SOLANA_WORMHOLE_CHAIN_ID]
 
 # deploy essentials
 WEB3_INFURA_PROJECT_ID = get_env("WEB3_INFURA_PROJECT_ID")
-PRIVATE_KEY = get_env("PRIVATE_KEY")
+DEPLOYER = get_env("DEPLOYER")
 
 JUMPGATE = get_env("JUMPGATE")
 
@@ -34,13 +35,13 @@ def main():
         log.error("`WEB3_INFURA_PROJECT_ID` not found!")
         return
 
-    if not PRIVATE_KEY:
-        log.error("`PRIVATE_KEY` not found!")
+    if not DEPLOYER:
+        log.error("`DEPLOYER` not found!")
         return
 
     log.okay("All enviroment variables present!")
 
-    sender = accounts.add(PRIVATE_KEY)
+    sender = accounts.load(DEPLOYER)
     log.info("sender", sender.address)
     log.info("Jumpgate", JUMPGATE)
 

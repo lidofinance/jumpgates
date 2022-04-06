@@ -13,7 +13,7 @@ NETWORK = get_env("NETWORK")
 
 # deploy essentials
 WEB3_INFURA_PROJECT_ID = get_env("WEB3_INFURA_PROJECT_ID")
-PRIVATE_KEY = get_env("PRIVATE_KEY")
+DEPLOYER = get_env("DEPLOYER")
 
 # deploy parameters
 TOKEN = get_env("TOKEN")
@@ -38,8 +38,8 @@ def main():
         log.error("`WEB3_INFURA_PROJECT_ID` not found!")
         return
 
-    if not PRIVATE_KEY:
-        log.error("`PRIVATE_KEY` not found!")
+    if not DEPLOYER:
+        log.error("`DEPLOYER` not found!")
         return
 
     if not TOKEN:
@@ -62,12 +62,12 @@ def main():
         log.error("`RECIPIENT` not found!")
         return
 
-    deployer = accounts.add(PRIVATE_KEY)
+    deployer = accounts.load(DEPLOYER)
 
     log.okay("All environment variables are present!")
 
     log.info("NETWORK", NETWORK)
-    log.info("Deployer", deployer.address)
+    log.info("DEPLOYER", deployer.address)
     log.info("TOKEN", TOKEN)
     log.info("BRIDGE", BRIDGE)
     log.info("RECIPIENT_CHAIN", RECIPIENT_CHAIN)
@@ -92,30 +92,30 @@ def main():
     recipient = encode_address(RECIPIENT)
     arbiterFee = ARBITER_FEE
 
-    jumpgate = Jumpgate.deploy(
-        token,
-        bridge,
-        recipientChain,
-        recipient,
-        arbiterFee,
-        {"from": deployer},
-        publish_source=True,
-    )
+    # jumpgate = Jumpgate.deploy(
+    #     token,
+    #     bridge,
+    #     recipientChain,
+    #     recipient,
+    #     arbiterFee,
+    #     {"from": deployer},
+    #     publish_source=True,
+    # )
 
-    log.okay("Jumpgate deployed successfully!")
+    # log.okay("Jumpgate deployed successfully!")
 
-    deployed_filename = f"./deployed/{network.show_active()}-{RECIPIENT}.json"
-    with open(deployed_filename, "w") as outfile:
-        json.dump(
-            {
-                "jumpgate": jumpgate.address,
-                "token": token,
-                "bridge": bridge,
-                "recipientChain": recipientChain,
-                "recipient": RECIPIENT,
-                "arbiterFee": arbiterFee,
-            },
-            outfile,
-        )
+    # deployed_filename = f"./deployed/{network.show_active()}-{RECIPIENT}.json"
+    # with open(deployed_filename, "w") as outfile:
+    #     json.dump(
+    #         {
+    #             "jumpgate": jumpgate.address,
+    #             "token": token,
+    #             "bridge": bridge,
+    #             "recipientChain": recipientChain,
+    #             "recipient": RECIPIENT,
+    #             "arbiterFee": arbiterFee,
+    #         },
+    #         outfile,
+    #     )
 
-    log.okay("Deploy data dumped to", deployed_filename)
+    # log.okay("Deploy data dumped to", deployed_filename)

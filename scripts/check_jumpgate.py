@@ -1,5 +1,6 @@
 from brownie import network, accounts, Contract
 import json
+from scripts.deploy import DEPLOYER
 from utils.env import get_env
 
 import utils.log as log
@@ -13,7 +14,7 @@ NETWORK = get_env("NETWORK")
 
 # deploy essentials
 WEB3_INFURA_PROJECT_ID = get_env("WEB3_INFURA_PROJECT_ID")
-PRIVATE_KEY = get_env("PRIVATE_KEY")
+DEPLOYER = get_env("DEPLOYER")
 
 # deploy parameters
 JUMPGATE = get_env("JUMPGATE")
@@ -43,8 +44,8 @@ def main():
         log.error("`WEB3_INFURA_PROJECT_ID` not found!")
         return
 
-    if not PRIVATE_KEY:
-        log.error("`PRIVATE_KEY` not found!")
+    if not DEPLOYER:
+        log.error("`DEPLOYER` not found!")
         return
 
     if not TOKEN:
@@ -67,7 +68,7 @@ def main():
         log.error("`RECIPIENT` not found!")
         return
 
-    deployer = accounts.add(PRIVATE_KEY)
+    deployer = accounts.load(DEPLOYER)
 
     log.okay("All environment variables are present!")
 
@@ -76,6 +77,9 @@ def main():
     jumpgate = Contract.from_explorer(JUMPGATE)
 
     encode_address = get_address_encoder(RECIPIENT_CHAIN)
+
+    assert jumpgate.owner() == deployer.address
+    log.okay("Owner matches", deployer.address)
 
     assert jumpgate.token() == TOKEN
     log.okay("Token matches", TOKEN)

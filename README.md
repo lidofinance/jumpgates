@@ -64,11 +64,15 @@ $ export ETHERSCAN_TOKEN=%YOUR-ETHERSCAN-TOKEN%
 
 Before you proceed, please follow [Getting Started](#-getting-started) instructions.
 
-#### Step 1. Specify environment variables.
+#### Step 1. Add a local account.
+
+You can add a local account either from a private key or a keystore. If you do not have either of them, consider generating a new account. Learn more about Brownie [local accounts](https://eth-brownie.readthedocs.io/en/v1.6.4/accounts.html#managing-local-accounts).
+
+#### Step 2. Specify environment variables.
 
 You can do this by copying the contents of `sample.env` into `.env` and filling it out. The necessary variables are listed below,
 
-- `PRIVATE_KEY` - your private key;
+- `DEPLOYER` - your local account id;
 - `NETWORK` - name of the network you want to deploy a jumpgate to, e.g., `mainnet`, `goerli`, `ropsten`, etc.;
 - `TOKEN` - address of the ERC20 token you want to transfer;
 - `BRIDGE` - address of the Wormhole Token Bridge;
@@ -76,19 +80,19 @@ You can do this by copying the contents of `sample.env` into `.env` and filling 
 - `RECIPIENT` - address of the recipient;
 - `ARBITER_FEE` - bridge arbiter fee, defaults to 0.
 
-#### Step 2. Run the deploy script.
+#### Step 3. Run the deploy script.
 
 ```bash
 $ brownie run scripts/deploy.py
 ```
 
-If you've specified all the necessary variables, they will be displayed in your terminal. Confirm them and enter 'y' to proceed. E.g.,
+Upon running the script you will prompted to enter the password to your local account. After that, all the deploy parameters will be displayed in your terminal. Confirm them and enter 'y' to proceed. E.g.,
 
 <img alt="image" src="https://user-images.githubusercontent.com/39704351/161552953-23b81a40-f468-4196-9c81-89ea8a5745e8.png">
 
 If all is correct, you should be able to see your transaction hash and the address of the jumpgate in the terminal. You will also find the deployment parameters in a newly created JSON file in the [`deployed`](/deployed/) directory that is named `%NETWORK%-%RECIPIENT%.json`.
 
-#### Step 3 (optional). Check your deployment.
+#### Step 4 (optional). Check your deployment.
 
 Specify the newly deployed jumpgate address in `JUMPGATE` in `.env` and run the check script.
 
