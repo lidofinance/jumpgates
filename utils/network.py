@@ -1,5 +1,12 @@
 from brownie import network
 
 
-def is_development():
-    return network.show_active() == "mainnet-fork"
+def is_development() -> bool:
+    dev_networks = [
+        "development",
+        "hardhat",
+        "hardhat-fork",
+        "mainnet-fork",
+        "goerli-fork",
+    ]
+    return network.show_active() not in dev_networks
