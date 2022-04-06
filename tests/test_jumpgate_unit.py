@@ -195,3 +195,16 @@ def test_bridge_tokens(jumpgate, token, amount, token_holder, bridge):
     assert tx.events["LogMessagePublished"]["sequence"] >= 0
     assert tx.events["LogMessagePublished"]["nonce"] == 0
     assert tx.events["LogMessagePublished"]["consistencyLevel"] == 15
+
+    assert "TokensBridged" in tx.events
+    assert tx.events["TokensBridged"]["_token"] == token.address
+    assert tx.events["TokensBridged"]["_bridge"] == bridge.address
+    assert tx.events["TokensBridged"]["_recipientChain"] == jumpgate.recipientChain()
+    assert tx.events["TokensBridged"]["_recipient"] == jumpgate.recipient()
+    assert tx.events["TokensBridged"]["_arbiterFee"] == jumpgate.arbiterFee()
+    assert tx.events["TokensBridged"]["_amount"] == amount
+    assert tx.events["TokensBridged"]["_nonce"] == 0
+    assert (
+        tx.events["TokensBridged"]["_transferSequence"]
+        == tx.events["LogMessagePublished"]["sequence"]
+    )

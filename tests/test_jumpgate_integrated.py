@@ -64,3 +64,16 @@ def test_full_flow(
     assert events["LogMessagePublished"]["sequence"] >= 0
     assert events["LogMessagePublished"]["nonce"] == 0
     assert events["LogMessagePublished"]["consistencyLevel"] == 15
+
+    assert "TokensBridged" in events
+    assert events["TokensBridged"]["_token"] == token.address
+    assert events["TokensBridged"]["_bridge"] == bridge.address
+    assert events["TokensBridged"]["_recipientChain"] == jumpgate.recipientChain()
+    assert events["TokensBridged"]["_recipient"] == jumpgate.recipient()
+    assert events["TokensBridged"]["_arbiterFee"] == jumpgate.arbiterFee()
+    assert events["TokensBridged"]["_amount"] == amount
+    assert events["TokensBridged"]["_nonce"] == 0
+    assert (
+        events["TokensBridged"]["_transferSequence"]
+        == events["LogMessagePublished"]["sequence"]
+    )
