@@ -60,6 +60,22 @@ Replace `%YOUR-ETHERSCAN-TOKEN%` below with your actual API key. Learn more abou
 $ export ETHERSCAN_TOKEN=%YOUR-ETHERSCAN-TOKEN%
 ```
 
+## 🧪 Testing a jumpgate
+Before you proceed, please follow [Getting Started](#-getting-started) instructions.
+
+To run the entire test suit, execute the following command,
+```bash
+$ brownie test
+```
+
+Alternatively, you can run a specific test module by specifying the path,
+```bash
+$ brownie test tests/test_jumpgate_unit.py
+```
+
+Learn more about Brownie [tests](https://eth-brownie.readthedocs.io/en/stable/tests-pytest-intro.html).
+
+
 ## 🚛 Deploying a jumpgate
 
 Before you proceed, please follow [Getting Started](#-getting-started) instructions.
