@@ -52,7 +52,7 @@ Replace `%YOUR-INFURA-PROJECT-ID%` below with your actual project id. Learn more
 $ export WEB3_INFURA_PROJECT_ID=%YOUR-INFURA-PROJECT-ID%
 ```
 
-#### Step 5 (optional). Specify your Etherscan API key.
+#### Step 5 (recommended). Specify your Etherscan API key.
 
 Replace `%YOUR-ETHERSCAN-TOKEN%` below with your actual API key. Learn more about [Etherscan API](https://etherscan.io/apis).
 
@@ -61,20 +61,22 @@ $ export ETHERSCAN_TOKEN=%YOUR-ETHERSCAN-TOKEN%
 ```
 
 ## 🧪 Testing a jumpgate
+
 Before you proceed, please follow [Getting Started](#-getting-started) instructions.
 
 To run the entire test suit, execute the following command,
+
 ```bash
 $ brownie test
 ```
 
 Alternatively, you can run a specific test module by specifying the path,
+
 ```bash
 $ brownie test tests/test_jumpgate_unit.py
 ```
 
 Learn more about Brownie [tests](https://eth-brownie.readthedocs.io/en/stable/tests-pytest-intro.html).
-
 
 ## 🚛 Deploying a jumpgate
 
@@ -119,11 +121,13 @@ $ brownie run scripts/check_jumpgate.py
 You should be able to tell whether the deployment was successful by the outputs in the terminal.
 
 ## 🕳 Bridging tokens
+
 Before you proceed, please follow [Getting Started](#-getting-started) instructions.
 
 The bridging of tokens is the core function of jumpgates. You can do it by running the [bridging](/scripts/bridge_tokens.py) script.
 
 #### Step 1. Add a local account.
+
 ###### Skip this step if you have already done it in the [Deploying a jumpgate](#-deploying-a-jumpgate) section.
 
 You can add a local account either from a private key or a keystore. If you do not have either of them, consider generating a new account. Learn more about Brownie [local accounts](https://eth-brownie.readthedocs.io/en/v1.6.4/accounts.html#managing-local-accounts).
@@ -137,9 +141,11 @@ You can do this by copying the contents of `sample.env` into `.env` and filling 
 - `JUMPGATE` - address of the jumpgate you want to active (you can find the list of deployed jumpgates in the [`deployed`](/deployed/) directory);
 
 #### Step 3. Run the script
+
 ```bash
 $ brownie run scripts/bridge_tokens.py
 ```
+
 Upon running the script you will prompted to enter the password to your local account. After that, all the bridging parameters will be displayed in your terminal. Confirm them and enter 'y' to proceed. E.g.,
 <img alt="image" src="https://user-images.githubusercontent.com/39704351/161904243-28ca16ea-71e6-40c1-90bc-2748c69bf429.png">
 
