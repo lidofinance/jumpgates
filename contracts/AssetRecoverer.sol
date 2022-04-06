@@ -50,7 +50,8 @@ abstract contract AssetRecoverer is Ownable {
         address _recipient,
         uint256 _amount
     ) public onlyOwner {
-        SafeERC20.safeTransfer(IERC20(_token), _recipient, _amount);
+        bool success = IERC20(_token).transfer(_recipient, _amount);
+        require(success);
         emit ERC20Recovered(_token, _recipient, _amount);
     }
 
