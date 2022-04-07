@@ -1,6 +1,7 @@
 from brownie import network, accounts, Contract
 import json
 from scripts.deploy import DEPLOYER
+from utils.contract import init_jumpgate
 from utils.env import get_env
 
 import utils.log as log
@@ -74,7 +75,7 @@ def main():
 
     log.info("Checking deploy parameters")
 
-    jumpgate = Contract.from_explorer(JUMPGATE)
+    jumpgate = init_jumpgate(JUMPGATE)
 
     encode_address = get_address_encoder(RECIPIENT_CHAIN)
 
