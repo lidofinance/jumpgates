@@ -99,7 +99,7 @@ def main():
         recipient,
         arbiterFee,
         {"from": deployer},
-        publish_source=True,
+        publish_source=bool(get_env("ETHERSCAN_TOKEN")),
     )
 
     log.okay("Jumpgate deployed successfully!")
