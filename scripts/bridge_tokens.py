@@ -1,5 +1,6 @@
-from brownie import network, accounts, Contract
+from brownie import network, accounts
 from scripts.deploy import DEPLOYER
+from utils.contract import init_jumpgate
 from utils.env import get_env
 
 import utils.log as log
@@ -50,7 +51,9 @@ def main():
         log.error("Script stopped!")
         return
 
+    jumpgate = init_jumpgate(JUMPGATE)
+
     log.info("Calling `bridgeTokens` on", JUMPGATE)
-    jumpgate = Contract.from_explorer(JUMPGATE)
     jumpgate.bridgeTokens({"from": sender})
-    log.info("Transaction successful")
+
+    log.okay("Transaction successful")
