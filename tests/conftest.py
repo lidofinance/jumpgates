@@ -19,6 +19,15 @@ from utils.config import (
     VITALIK,
     WORMHOLE_TOKEN_BRIDGE_ADDRESS,
 )
+from utils.contract import (
+    init_add_reward_program_evm_script_factory,
+    init_easytrack,
+    init_ldo,
+    init_rarible_mt,
+    init_rarible_nft,
+    init_reward_programs_registry,
+    init_top_up_reward_program_evm_script_factory,
+)
 from utils.encode import encode_terra_address
 
 
@@ -61,7 +70,7 @@ def deploy_params(request):
 # ERC20
 @pytest.fixture
 def token():
-    return Contract.from_explorer(LDO_ADDRESS)
+    return init_ldo(LDO_ADDRESS)
 
 
 @pytest.fixture
@@ -72,7 +81,7 @@ def token_holder(accounts):
 # ERC721
 @pytest.fixture(scope="function")
 def nft():
-    return Contract.from_explorer(RARIBLE_NFT_ADDRESS)
+    return init_rarible_nft(RARIBLE_NFT_ADDRESS)
 
 
 @pytest.fixture
@@ -88,7 +97,7 @@ def nft_holder(accounts):
 # ERC1155
 @pytest.fixture(scope="function")
 def multitoken():
-    return Contract.from_explorer(RARIBLE_MT_ADDRESS)
+    return init_rarible_mt(RARIBLE_MT_ADDRESS)
 
 
 @pytest.fixture
@@ -130,19 +139,23 @@ def jumpgate(owner, token, bridge):
 
 @pytest.fixture
 def easytrack():
-    return Contract.from_explorer(EASYTRACK)
+    return init_easytrack(EASYTRACK)
 
 
 @pytest.fixture
 def reward_program_registry():
-    return Contract.from_explorer(REWARD_PROGRAMS_REGISTRY)
+    return init_reward_programs_registry(REWARD_PROGRAMS_REGISTRY)
 
 
 @pytest.fixture
 def add_reward_program_evm_script_factory():
-    return Contract.from_explorer(ADD_REWARD_PROGRAM_EVM_SCRIPT_FACTORY)
+    return init_add_reward_program_evm_script_factory(
+        ADD_REWARD_PROGRAM_EVM_SCRIPT_FACTORY
+    )
 
 
 @pytest.fixture
 def top_up_reward_program_evm_script_factory():
-    return Contract.from_explorer(TOP_UP_REWARD_PROGRAM_EVM_SCRIPT_FACTORY)
+    return init_top_up_reward_program_evm_script_factory(
+        TOP_UP_REWARD_PROGRAM_EVM_SCRIPT_FACTORY
+    )

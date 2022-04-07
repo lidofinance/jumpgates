@@ -1,20 +1,46 @@
-from brownie import network, Contract, Jumpgate
+from brownie import interface, Contract
 from utils.env import get_env
 import utils.log as log
 
 
-def init_contract(address, name="Contract", abi=None):
-    log.info("Initializing contract", name)
-
+def init_contract(address, construct):
     if get_env("ETHERSCAN_TOKEN"):
         contract = Contract.from_explorer(address)
-        log.okay(f"{name} initialized from explorer.")
+        log.okay(f"{address} initialized from explorer.")
     else:
-        contract = Contract.from_abi(name, address, abi)
-        log.okay(f"{name} initialized from abi.")
+        contract = construct(address)
+        log.okay(f"{address} initialized from abi.")
 
     return contract
 
 
 def init_jumpgate(address):
-    return init_contract(address, "Jumpgate", Jumpgate.abi)
+    return init_contract(address, interface.Jumpgate)
+
+
+def init_ldo(address):
+    return init_contract(address, interface.LDO)
+
+
+def init_rarible_nft(address):
+    return init_contract(address, interface.RaribleNFT)
+
+
+def init_rarible_mt(address):
+    return init_contract(address, interface.RaribleMT)
+
+
+def init_easytrack(address):
+    return init_contract(address, interface.EasyTrack)
+
+
+def init_reward_programs_registry(address):
+    return init_contract(address, interface.RewardProgramsRegistry)
+
+
+def init_add_reward_program_evm_script_factory(address):
+    return init_contract(address, interface.AddRewardProgramEvmScriptFactory)
+
+
+def init_top_up_reward_program_evm_script_factory(address):
+    return init_contract(address, interface.TopUpRewardProgramEvmScriptFactory)
