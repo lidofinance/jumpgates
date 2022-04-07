@@ -44,6 +44,12 @@ $ source venv/bin/activate
 $ pip3 install -r requirements.txt
 ```
 
+Note! The `solana` package may have conflicts with `eth_brownie`, in which case try installing the former individually,
+
+```bash
+$ pip3 install solana
+```
+
 #### Step 4. Specify your Infura project id.
 
 Replace `%YOUR-INFURA-PROJECT-ID%` below with your actual project id. Learn more about [Infura](https://infura.io/).
