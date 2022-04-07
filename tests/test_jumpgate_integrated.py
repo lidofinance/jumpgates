@@ -10,7 +10,7 @@ def test_full_flow(
     jumpgate,
     easytrack,
     bridge,
-    reward_program_registry,
+    reward_programs_registry,
     add_reward_program_evm_script_factory,
     top_up_reward_program_evm_script_factory,
 ):
@@ -21,7 +21,7 @@ def test_full_flow(
         encode_single("(address,string)", [jumpgate.address, "Jumpgate Recipient #1"]),
     )
 
-    assert jumpgate.address in reward_program_registry.getRewardPrograms()
+    assert jumpgate.address in reward_programs_registry.getRewardPrograms()
 
     # make sure reward programs use the same token as Jumpgate
     assert top_up_reward_program_evm_script_factory.rewardToken() == jumpgate.token()

@@ -143,7 +143,7 @@ def easytrack():
 
 
 @pytest.fixture
-def reward_program_registry():
+def reward_programs_registry():
     return init_reward_programs_registry(REWARD_PROGRAMS_REGISTRY)
 
 
