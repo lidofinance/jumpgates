@@ -22,6 +22,14 @@ def init_ldo(address):
     return init_contract(address, interface.LDO)
 
 
+def init_erc20(address):
+    return init_contract(address, interface.ERC20)
+
+
+def init_bridge(address):
+    return init_contract(address, interface.IWormholeTokenBridge)
+
+
 def init_rarible_nft(address):
     return init_contract(address, interface.RaribleNFT)
 

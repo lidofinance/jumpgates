@@ -1,17 +1,27 @@
-from brownie import network, accounts, Contract
-import json
+from brownie import network, accounts, Jumpgate
 from scripts.deploy import DEPLOYER
-from utils.contract import init_jumpgate
+from utils.contract import (
+    init_add_reward_program_evm_script_factory,
+    init_bridge,
+    init_easytrack,
+    init_erc20,
+    init_jumpgate,
+    init_reward_programs_registry,
+    init_top_up_reward_program_evm_script_factory,
+)
 from utils.env import get_env
 
 import utils.log as log
 from utils.config import (
+    ADD_REWARD_PROGRAM_EVM_SCRIPT_FACTORY,
+    EASYTRACK,
+    REWARD_PROGRAMS_REGISTRY,
     SOLANA_WORMHOLE_CHAIN_ID,
     TERRA_WORMHOLE_CHAIN_ID,
+    TOP_UP_REWARD_PROGRAM_EVM_SCRIPT_FACTORY,
 )
-from utils.encode import encode_terra_address, get_address_encoder
-
-NETWORK = get_env("NETWORK")
+from utils.encode import get_address_encoder
+from utils.simulate import simulate_full_flow
 
 # deploy essentials
 WEB3_INFURA_PROJECT_ID = get_env("WEB3_INFURA_PROJECT_ID")
@@ -29,12 +39,10 @@ SUPPORTED_CHAINS = [TERRA_WORMHOLE_CHAIN_ID, SOLANA_WORMHOLE_CHAIN_ID]
 
 
 def main():
-    if not NETWORK:
-        log.error("`NETWORK` not found!")
-        return
-
-    if network.show_active() != NETWORK:
-        log.error(f"Wrong network! Expected `{NETWORK}` but got", network.show_active())
+    if network.show_active() != "mainnet-fork":
+        log.error(
+            f"Wrong network! Expected `mainnet-fork` but got", network.show_active()
+        )
         return
 
     if not JUMPGATE:
@@ -75,9 +83,9 @@ def main():
 
     log.info("Checking deploy parameters")
 
-    jumpgate = init_jumpgate(JUMPGATE)
-
     encode_address = get_address_encoder(RECIPIENT_CHAIN)
+
+    jumpgate = init_jumpgate(JUMPGATE)
 
     assert jumpgate.owner() == deployer.address
     log.okay("Owner matches", deployer.address)
@@ -98,3 +106,28 @@ def main():
     log.okay("Arbiter fee matches", ARBITER_FEE)
 
     log.okay("Deploy parameters are correct!")
+
+    token = init_erc20(TOKEN)
+    easytrack = init_easytrack(EASYTRACK)
+    bridge = init_bridge(BRIDGE)
+    reward_programs_registry = init_reward_programs_registry(REWARD_PROGRAMS_REGISTRY)
+    add_reward_program_evm_script_factory = init_add_reward_program_evm_script_factory(
+        ADD_REWARD_PROGRAM_EVM_SCRIPT_FACTORY
+    )
+    top_up_reward_program_evm_script_factory = (
+        init_top_up_reward_program_evm_script_factory(
+            TOP_UP_REWARD_PROGRAM_EVM_SCRIPT_FACTORY
+        )
+    )
+
+    simulate_full_flow(
+        token,
+        jumpgate,
+        easytrack,
+        bridge,
+        reward_programs_registry,
+        add_reward_program_evm_script_factory,
+        top_up_reward_program_evm_script_factory,
+    )
+
+    log.okay("Full flow simulated successfully!")
