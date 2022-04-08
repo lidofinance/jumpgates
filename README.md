@@ -82,6 +82,8 @@ Alternatively, you can run a specific test module by specifying the path,
 $ brownie test tests/test_jumpgate_unit.py
 ```
 
+Note! The test suite will only pass on `mainnet-fork` network because it uses hardcoded mainnet addresses.
+
 Learn more about Brownie [tests](https://eth-brownie.readthedocs.io/en/stable/tests-pytest-intro.html).
 
 ## 🚛 Deploying a jumpgate
