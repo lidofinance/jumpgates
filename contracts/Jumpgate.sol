@@ -12,6 +12,7 @@ import "../interfaces/IWormholeTokenBridge.sol";
 /// @dev `IWormholeTokenBridge` and the logic in `_callBridgeTransfer` are specific to Wormhole Token Bridge
 contract Jumpgate is AssetRecoverer {
     event JumpgateCreated(
+        address indexed _jumpgate,
         address indexed _token,
         address indexed _bridge,
         uint16 _recipientChain,
@@ -46,12 +47,15 @@ contract Jumpgate is AssetRecoverer {
     uint256 public immutable arbiterFee;
 
     constructor(
+        address _owner,
         address _token,
         address _bridge,
         uint16 _recipientChain,
         bytes32 _recipient,
         uint256 _arbiterFee
     ) {
+        transferOwnership(_owner);
+
         token = IERC20(_token);
         bridge = IWormholeTokenBridge(_bridge);
         recipientChain = _recipientChain;
@@ -59,6 +63,7 @@ contract Jumpgate is AssetRecoverer {
         arbiterFee = _arbiterFee;
 
         emit JumpgateCreated(
+            address(this),
             _token,
             _bridge,
             _recipientChain,

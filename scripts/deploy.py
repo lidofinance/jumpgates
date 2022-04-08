@@ -93,6 +93,7 @@ def main():
     arbiterFee = ARBITER_FEE
 
     jumpgate = Jumpgate.deploy(
+        deployer.address,
         token,
         bridge,
         recipientChain,

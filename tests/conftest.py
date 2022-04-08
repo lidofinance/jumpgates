@@ -128,6 +128,7 @@ def bridge(interface):
 @pytest.fixture(scope="function")
 def jumpgate(owner, token, bridge):
     return Jumpgate.deploy(
+        owner.address,
         token.address,
         bridge.address,
         TERRA_WORMHOLE_CHAIN_ID,

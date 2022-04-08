@@ -13,6 +13,7 @@ def test_deploy_parameters(token, bridge, owner, deploy_params):
     arbiter_fee = 0
 
     jumpgate = Jumpgate.deploy(
+        owner.address,
         token.address,
         bridge.address,
         recipientChain,
