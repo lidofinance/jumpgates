@@ -1,5 +1,5 @@
 import pytest
-from brownie import Contract, Jumpgate, Destrudo, accounts, MockERC20
+from brownie import Contract, Jumpgate, Destrudo, accounts, MockERC20, MockERC721
 from utils.config import (
     ADD_REWARD_PROGRAM_EVM_SCRIPT_FACTORY,
     EASYTRACK,
@@ -77,25 +77,20 @@ def token(token_holder):
     return MockERC20.deploy({"from": token_holder})
 
 
-# @pytest.fixture
-# def token_holder(accounts):
-#     return accounts.at(LDO_HOLDER, force=True)
-
-
 # ERC721
-@pytest.fixture(scope="function")
-def nft():
-    return init_rarible_nft(RARIBLE_NFT_ADDRESS)
+@pytest.fixture
+def nft_holder(accounts):
+    return accounts.add()
+
+
+@pytest.fixture
+def nft(nft_holder):
+    return MockERC721.deploy({"from": nft_holder})
 
 
 @pytest.fixture
 def nft_id():
-    return NFT_ID
-
-
-@pytest.fixture(scope="function")
-def nft_holder(accounts):
-    return accounts.at(VITALIK, force=True)
+    return 0
 
 
 # ERC1155

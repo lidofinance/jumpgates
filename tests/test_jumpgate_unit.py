@@ -143,38 +143,42 @@ def test_recover_erc20(token, jumpgate, sender, token_holder, amount):
             )
 
 
-# def test_recover_erc721(jumpgate, sender, nft, nft_id, nft_holder):
-#     # make sure nft_holder still owns the nft
-#     assert nft.ownerOf(nft_id) == nft_holder
-#     # transfer the nft to jumpgate
-#     nft.transferFrom(nft_holder.address, jumpgate.address, nft_id, {"from": nft_holder})
-#     assert nft.ownerOf(nft_id) == jumpgate.address
+def test_recover_erc721(jumpgate, sender, nft, nft_id, nft_holder):
+    # make sure nft_holder still owns the nft
+    assert nft.ownerOf(nft_id) == nft_holder
 
-#     is_owner = jumpgate.owner() == sender.address
+    # transfer the nft to jumpgate
+    nft.transferFrom(nft_holder.address, jumpgate.address, nft_id, {"from": nft_holder})
+    assert nft.ownerOf(nft_id) == jumpgate.address
 
-#     # recover the nft to deployer as the owner
-#     if is_owner:
-#         tx = jumpgate.recoverERC721(
-#             nft.address, nft_id, sender.address, {"from": sender}
-#         )
+    # recovery is owner-only
+    is_owner = jumpgate.owner() == sender.address
 
-#         assert nft.ownerOf(nft_id) == sender.address
+    # recover as the owner
+    if is_owner:
+        # return nft back to original holder
+        tx = jumpgate.recoverERC721(
+            nft.address, nft_id, sender.address, {"from": sender}
+        )
 
-#         assert "Transfer" in tx.events
-#         assert tx.events["Transfer"]["from"] == jumpgate.address
-#         assert tx.events["Transfer"]["to"] == sender.address
-#         assert tx.events["Transfer"]["tokenId"] == nft_id
+        assert nft.ownerOf(nft_id) == sender.address
 
-#         assert "ERC721Recovered" in tx.events
-#         assert tx.events["ERC721Recovered"]["_token"] == nft.address
-#         assert tx.events["ERC721Recovered"]["_tokenId"] == nft_id
-#         assert tx.events["ERC721Recovered"]["_recipient"] == sender.address
-#     # attempt to recover as a non-owner
-#     else:
-#         with reverts("Ownable: caller is not the owner"):
-#             jumpgate.recoverERC721(
-#                 nft.address, nft_id, sender.address, {"from": sender}
-#             )
+        assert "Transfer" in tx.events
+        assert tx.events["Transfer"]["from"] == jumpgate.address
+        assert tx.events["Transfer"]["to"] == sender.address
+        assert tx.events["Transfer"]["tokenId"] == nft_id
+
+        # make sure ERC721Recovered event fired
+        assert "ERC721Recovered" in tx.events
+        assert tx.events["ERC721Recovered"]["_token"] == nft.address
+        assert tx.events["ERC721Recovered"]["_tokenId"] == nft_id
+        assert tx.events["ERC721Recovered"]["_recipient"] == sender.address
+    # attempt to recover as a non-owner
+    else:
+        with reverts("Ownable: caller is not the owner"):
+            jumpgate.recoverERC721(
+                nft.address, nft_id, sender.address, {"from": sender}
+            )
 
 
 # def test_send_ERC1155(jumpgate, multitoken, multitoken_id, multitoken_holder):
