@@ -36,37 +36,47 @@ import pytest
 #     assert jumpgate.tx.events["JumpgateCreated"]["_arbiterFee"] == arbiter_fee
 
 
-# @pytest.mark.parametrize("amount", [0, 1, one_quintillion])
-# def test_recover_ether(
-#     jumpgate,
-#     destrudo,
-#     amount,
-#     sender,
-#     stranger,
-# ):
-#     # top up jumpgate balance using a self-destructable contract
-#     jumpgate_balance_before = jumpgate.balance()
-#     destrudo.destructSelf(jumpgate.address, {"value": amount, "from": sender})
-#     assert jumpgate.balance() == jumpgate_balance_before + amount
+@pytest.mark.parametrize("amount", [0, 1, one_quintillion])
+def test_recover_ether(
+    jumpgate,
+    destrudo,
+    amount,
+    sender,
+    stranger,
+):
+    # remember jumpgate balance before sending ether to it
+    jumpgate_balance_before = jumpgate.balance()
 
-#     jumpgate_balance_before = jumpgate.balance()
-#     # recovering to stranger to avoid gas calculations
-#     recipient = stranger
-#     recipient_balance_before = recipient.balance()
+    # send ether to jumpgate by self-destrucing another contract
+    destrudo.destructSelf(jumpgate.address, {"value": amount, "from": sender})
 
-#     is_owner = jumpgate.owner() == sender.address
-#     # recover as the owner
-#     if is_owner:
-#         tx = jumpgate.recoverEther(recipient.address, {"from": sender})
+    # make sure jumpgate received ether
+    assert jumpgate.balance() == jumpgate_balance_before + amount
 
-#         assert recipient.balance() == jumpgate_balance_before + recipient_balance_before
-#         assert "EtherRecovered" in tx.events
-#         assert tx.events["EtherRecovered"]["_recipient"] == recipient.address
-#         assert tx.events["EtherRecovered"]["_amount"] == jumpgate_balance_before
-#     # attempt to recover as a non-owner
-#     else:
-#         with reverts("Ownable: caller is not the owner"):
-#             jumpgate.recoverEther(recipient.address, {"from": sender})
+    # remember jumpgate balance before recovery
+    jumpgate_balance_before = jumpgate.balance()
+
+    # recovering to stranger to avoid gas calculations
+    recipient = stranger
+    recipient_balance_before = recipient.balance()
+
+    # recovery is owner-only
+    is_owner = jumpgate.owner() == sender.address
+
+    # recover as the owner
+    if is_owner:
+        tx = jumpgate.recoverEther(recipient.address, {"from": sender})
+
+        assert recipient.balance() == jumpgate_balance_before + recipient_balance_before
+
+        # make sure EtherRecovered is fired
+        assert "EtherRecovered" in tx.events
+        assert tx.events["EtherRecovered"]["_recipient"] == recipient.address
+        assert tx.events["EtherRecovered"]["_amount"] == jumpgate_balance_before
+    # attempt to recover as a non-owner
+    else:
+        with reverts("Ownable: caller is not the owner"):
+            jumpgate.recoverEther(recipient.address, {"from": sender})
 
 
 @pytest.mark.parametrize("amount", [0, 1, one_quintillion])
