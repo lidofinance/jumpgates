@@ -5,35 +5,40 @@ from utils.encode import get_address_encoder
 import pytest
 
 
-# def test_deploy_parameters(token, bridge, owner, deploy_params):
-#     (recipientChain, recipient) = deploy_params
+def test_deploy_parameters(token, bridge, owner, deploy_params):
+    (recipientChain, recipient) = deploy_params
 
-#     encode = get_address_encoder(recipientChain)
-#     recipient_encoded = encode(recipient)
-#     arbiter_fee = 0
+    # address encoding is different for different chains
+    encode = get_address_encoder(recipientChain)
+    recipient_encoded = encode(recipient)
 
-#     jumpgate = Jumpgate.deploy(
-#         owner.address,
-#         token.address,
-#         bridge.address,
-#         recipientChain,
-#         recipient_encoded,
-#         arbiter_fee,
-#         {"from": owner},
-#     )
+    arbiter_fee = 0
 
-#     assert jumpgate.token() == token.address
-#     assert jumpgate.bridge() == bridge.address
-#     assert jumpgate.recipientChain() == recipientChain
-#     assert jumpgate.recipient() == recipient_encoded
-#     assert jumpgate.arbiterFee() == arbiter_fee
+    jumpgate = Jumpgate.deploy(
+        owner.address,
+        token.address,
+        bridge.address,
+        recipientChain,
+        recipient_encoded,
+        arbiter_fee,
+        {"from": owner},
+    )
 
-#     assert "JumpgateCreated" in jumpgate.tx.events
-#     assert jumpgate.tx.events["JumpgateCreated"]["_token"] == token.address
-#     assert jumpgate.tx.events["JumpgateCreated"]["_bridge"] == bridge.address
-#     assert jumpgate.tx.events["JumpgateCreated"]["_recipientChain"] == recipientChain
-#     assert jumpgate.tx.events["JumpgateCreated"]["_recipient"] == recipient_encoded
-#     assert jumpgate.tx.events["JumpgateCreated"]["_arbiterFee"] == arbiter_fee
+    # check all deployment args
+    assert jumpgate.owner() == owner.address
+    assert jumpgate.token() == token.address
+    assert jumpgate.bridge() == bridge.address
+    assert jumpgate.recipientChain() == recipientChain
+    assert jumpgate.recipient() == recipient_encoded
+    assert jumpgate.arbiterFee() == arbiter_fee
+
+    # make sure JumpgateCreated event fired
+    assert "JumpgateCreated" in jumpgate.tx.events
+    assert jumpgate.tx.events["JumpgateCreated"]["_token"] == token.address
+    assert jumpgate.tx.events["JumpgateCreated"]["_bridge"] == bridge.address
+    assert jumpgate.tx.events["JumpgateCreated"]["_recipientChain"] == recipientChain
+    assert jumpgate.tx.events["JumpgateCreated"]["_recipient"] == recipient_encoded
+    assert jumpgate.tx.events["JumpgateCreated"]["_arbiterFee"] == arbiter_fee
 
 
 @pytest.mark.parametrize("amount", [0, 1, one_quintillion])
