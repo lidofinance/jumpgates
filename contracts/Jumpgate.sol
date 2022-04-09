@@ -76,6 +76,8 @@ contract Jumpgate is AssetRecoverer {
     /// @dev permissionless method; caller only pays for bridging gas
     function bridgeTokens() public {
         uint256 amount = token.balanceOf(address(this));
+        require(amount >= 10**10, "Amount too small for bridging!");
+
         token.approve(address(bridge), amount);
         uint64 sequence = _callBridgeTransfer(amount);
 
