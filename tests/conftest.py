@@ -1,5 +1,13 @@
 import pytest
-from brownie import Contract, Jumpgate, Destrudo, accounts, MockERC20, MockERC721
+from brownie import (
+    Contract,
+    Jumpgate,
+    Destrudo,
+    accounts,
+    MockERC20,
+    MockERC721,
+    MockERC1155,
+)
 from utils.config import (
     ADD_REWARD_PROGRAM_EVM_SCRIPT_FACTORY,
     EASYTRACK,
@@ -94,19 +102,19 @@ def nft_id():
 
 
 # ERC1155
+@pytest.fixture
+def multitoken_holder(accounts):
+    return accounts.add()
+
+
 @pytest.fixture(scope="function")
-def multitoken():
-    return init_rarible_mt(RARIBLE_MT_ADDRESS)
+def multitoken(multitoken_holder):
+    return MockERC1155.deploy({"from": multitoken_holder})
 
 
 @pytest.fixture
 def multitoken_id():
-    return MULTITOKEN_ID
-
-
-@pytest.fixture(scope="function")
-def multitoken_holder(accounts):
-    return accounts.at(VITALIK, force=True)
+    return 0
 
 
 @pytest.fixture(scope="function")
