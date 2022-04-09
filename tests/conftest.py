@@ -1,6 +1,5 @@
-from aiohttp import request
 import pytest
-from brownie import Contract, Jumpgate, Destrudo, accounts
+from brownie import Contract, Jumpgate, Destrudo, accounts, MockERC20
 from utils.config import (
     ADD_REWARD_PROGRAM_EVM_SCRIPT_FACTORY,
     EASYTRACK,
@@ -69,13 +68,18 @@ def deploy_params(request):
 
 # ERC20
 @pytest.fixture
-def token():
-    return init_ldo(LDO_ADDRESS)
+def token_holder():
+    return accounts.add()
 
 
 @pytest.fixture
-def token_holder(accounts):
-    return accounts.at(LDO_HOLDER, force=True)
+def token(token_holder):
+    return MockERC20.deploy({"from": token_holder})
+
+
+# @pytest.fixture
+# def token_holder(accounts):
+#     return accounts.at(LDO_HOLDER, force=True)
 
 
 # ERC721
