@@ -4,10 +4,10 @@ import utils.log as log
 
 
 def init_contract(address, construct):
-    if get_env("ETHERSCAN_TOKEN"):
+    try:
         contract = Contract.from_explorer(address)
         log.okay(f"{address} initialized from explorer.")
-    else:
+    except:
         contract = construct(address)
         log.okay(f"{address} initialized from abi.")
 

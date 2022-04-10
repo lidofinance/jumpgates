@@ -39,10 +39,8 @@ SUPPORTED_CHAINS = [TERRA_WORMHOLE_CHAIN_ID, SOLANA_WORMHOLE_CHAIN_ID]
 
 
 def main():
-    if network.show_active() != "mainnet-fork":
-        log.error(
-            f"Wrong network! Expected `mainnet-fork` but got", network.show_active()
-        )
+    if network.show_active() not in ["mainnet-fork", "goerli-fork"]:
+        log.error(f"Wrong network!", network.show_active())
         return
 
     if not JUMPGATE:
@@ -130,6 +128,7 @@ def main():
         reward_programs_registry,
         add_reward_program_evm_script_factory,
         top_up_reward_program_evm_script_factory,
+        deployer,
     )
 
     log.okay("Full flow simulated successfully!")

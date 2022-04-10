@@ -9,6 +9,7 @@ def test_full_flow(
     reward_programs_registry,
     add_reward_program_evm_script_factory,
     top_up_reward_program_evm_script_factory,
+    owner,
 ):
     simulate_full_flow(
         ldo,
@@ -18,4 +19,5 @@ def test_full_flow(
         reward_programs_registry,
         add_reward_program_evm_script_factory,
         top_up_reward_program_evm_script_factory,
+        owner,
     )

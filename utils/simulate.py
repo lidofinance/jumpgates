@@ -48,6 +48,7 @@ def simulate_full_flow(
     reward_programs_registry,
     add_reward_program_evm_script_factory,
     top_up_reward_program_evm_script_factory,
+    owner,
 ):
     # register Jumpgate as a Reward Program
     enact_motion(
@@ -75,7 +76,8 @@ def simulate_full_flow(
 
     bridge_balance_before = token.balanceOf(bridge.address)
 
-    events = jumpgate.bridgeTokens().events
+    events = jumpgate.bridgeTokens({"from": owner}).events
+    print(events)
 
     assert "Approval" in events
     assert events["Approval"]["_owner"] == jumpgate.address
