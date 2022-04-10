@@ -7,7 +7,7 @@ from utils.config import (
     SOLANA_WORMHOLE_CHAIN_ID,
     TERRA_WORMHOLE_CHAIN_ID,
 )
-from utils.encode import encode_terra_address, get_address_encoder
+from utils.encode import get_address_encoder
 
 NETWORK = get_env("NETWORK")
 

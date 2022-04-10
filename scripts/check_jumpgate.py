@@ -1,4 +1,4 @@
-from brownie import network, accounts, Jumpgate
+from brownie import network, accounts
 from scripts.deploy import DEPLOYER
 from utils.contract import (
     init_add_reward_program_evm_script_factory,

@@ -1,6 +1,5 @@
 import pytest
 from brownie import (
-    Contract,
     Jumpgate,
     Destrudo,
     accounts,
@@ -13,25 +12,18 @@ from utils.config import (
     EASYTRACK,
     LDO_ADDRESS,
     LDO_HOLDER,
-    MULTITOKEN_ID,
-    NFT_ID,
-    RARIBLE_MT_ADDRESS,
-    RARIBLE_NFT_ADDRESS,
     REWARD_PROGRAMS_REGISTRY,
     SOLANA_RANDOM_ADDRESS,
     SOLANA_WORMHOLE_CHAIN_ID,
     TERRA_RANDOM_ADDRESS,
     TERRA_WORMHOLE_CHAIN_ID,
     TOP_UP_REWARD_PROGRAM_EVM_SCRIPT_FACTORY,
-    VITALIK,
     WORMHOLE_TOKEN_BRIDGE_ADDRESS,
 )
 from utils.contract import (
     init_add_reward_program_evm_script_factory,
     init_easytrack,
     init_ldo,
-    init_rarible_mt,
-    init_rarible_nft,
     init_reward_programs_registry,
     init_top_up_reward_program_evm_script_factory,
 )
