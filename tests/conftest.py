@@ -10,7 +10,7 @@ from brownie import (
 from utils.config import (
     ADD_REWARD_PROGRAM_EVM_SCRIPT_FACTORY,
     EASYTRACK,
-    LDO_ADDRESS,
+    LDO,
     LDO_HOLDER,
     REWARD_PROGRAMS_REGISTRY,
     SOLANA_RANDOM_ADDRESS,
@@ -131,17 +131,17 @@ def jumpgate(owner, token, bridge):
 
 
 @pytest.fixture
-def ldo_holder(accounts):
-    return accounts.at(LDO_HOLDER, force=True)
+def ldo_holder(accounts, chain):
+    return accounts.at(LDO_HOLDER.get(chain.id), force=True)
 
 
 @pytest.fixture
-def ldo():
-    return init_ldo(LDO_ADDRESS)
+def ldo(chain):
+    return init_ldo(LDO.get(chain.id))
 
 
 @pytest.fixture()
-def ldo_jumpgate(owner, ldo, bridge):
+def ldo_jumpgate(owner, ldo, bridge, chain):
     return Jumpgate.deploy(
         owner.address,
         ldo.address,
@@ -154,29 +154,29 @@ def ldo_jumpgate(owner, ldo, bridge):
 
 
 @pytest.fixture
-def bridge(interface):
-    return interface.IWormholeTokenBridge(WORMHOLE_TOKEN_BRIDGE_ADDRESS)
+def bridge(interface, chain):
+    return interface.IWormholeTokenBridge(WORMHOLE_TOKEN_BRIDGE_ADDRESS.get(chain.id))
 
 
 @pytest.fixture
-def easytrack():
-    return init_easytrack(EASYTRACK)
+def easytrack(chain):
+    return init_easytrack(EASYTRACK.get(chain.id))
 
 
 @pytest.fixture
-def reward_programs_registry():
-    return init_reward_programs_registry(REWARD_PROGRAMS_REGISTRY)
+def reward_programs_registry(chain):
+    return init_reward_programs_registry(REWARD_PROGRAMS_REGISTRY.get(chain.id))
 
 
 @pytest.fixture
-def add_reward_program_evm_script_factory():
+def add_reward_program_evm_script_factory(chain):
     return init_add_reward_program_evm_script_factory(
-        ADD_REWARD_PROGRAM_EVM_SCRIPT_FACTORY
+        ADD_REWARD_PROGRAM_EVM_SCRIPT_FACTORY.get(chain.id)
     )
 
 
 @pytest.fixture
-def top_up_reward_program_evm_script_factory():
+def top_up_reward_program_evm_script_factory(chain):
     return init_top_up_reward_program_evm_script_factory(
-        TOP_UP_REWARD_PROGRAM_EVM_SCRIPT_FACTORY
+        TOP_UP_REWARD_PROGRAM_EVM_SCRIPT_FACTORY.get(chain.id)
     )

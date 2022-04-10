@@ -108,15 +108,17 @@ def main():
     log.okay("Deploy parameters are correct!")
 
     token = init_erc20(TOKEN)
-    easytrack = init_easytrack(EASYTRACK)
+    easytrack = init_easytrack(EASYTRACK.get(network.chain.id))
     bridge = init_bridge(BRIDGE)
-    reward_programs_registry = init_reward_programs_registry(REWARD_PROGRAMS_REGISTRY)
+    reward_programs_registry = init_reward_programs_registry(
+        REWARD_PROGRAMS_REGISTRY.get(network.chain.id)
+    )
     add_reward_program_evm_script_factory = init_add_reward_program_evm_script_factory(
-        ADD_REWARD_PROGRAM_EVM_SCRIPT_FACTORY
+        ADD_REWARD_PROGRAM_EVM_SCRIPT_FACTORY.get(network.chain.id)
     )
     top_up_reward_program_evm_script_factory = (
         init_top_up_reward_program_evm_script_factory(
-            TOP_UP_REWARD_PROGRAM_EVM_SCRIPT_FACTORY
+            TOP_UP_REWARD_PROGRAM_EVM_SCRIPT_FACTORY.get(network.chain.id)
         )
     )
 
