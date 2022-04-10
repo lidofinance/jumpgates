@@ -66,6 +66,14 @@ Replace `%YOUR-ETHERSCAN-TOKEN%` below with your actual API key. Learn more abou
 $ export ETHERSCAN_TOKEN=%YOUR-ETHERSCAN-TOKEN%
 ```
 
+#### Step 6 (optional). Add a Goerli development fork.
+
+The project uses the `mainnet-fork` network by default. If you want to check your jumpgate deploys or run a test suit on Goerli, you can add `goerli-fork` by running the following command,
+
+```bash
+$ brownie networks add "Development" goerli-fork host=http://127.0.0.1 cmd=ganache-cli port=8545 gas_limit=12000000 fork=https://goerli.infura.io/v3/${WEB3_INFURA_PROJECT_ID} chain_id=5 mnemonic=brownie accounts=10 fork=goerli
+```
+
 ## 🧪 Testing a jumpgate
 
 Before you proceed, please follow [Getting Started](#-getting-started) instructions.
@@ -76,13 +84,11 @@ To run the entire test suit, execute the following command,
 $ brownie test
 ```
 
-Alternatively, you can run a specific test module by specifying the path,
-
 ```bash
 $ brownie test tests/test_jumpgate_unit.py
 ```
 
-Note! The test suite will only pass on `mainnet-fork` network because it uses hardcoded mainnet addresses.
+Note! This project uses `mainnet-fork` by default. To run tests
 
 Learn more about Brownie [tests](https://eth-brownie.readthedocs.io/en/stable/tests-pytest-intro.html).
 
