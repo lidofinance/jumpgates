@@ -2,8 +2,8 @@ from utils.simulate import simulate_full_flow
 
 
 def test_full_flow(
-    token,
-    jumpgate,
+    ldo,
+    ldo_jumpgate,
     easytrack,
     bridge,
     reward_programs_registry,
@@ -11,8 +11,8 @@ def test_full_flow(
     top_up_reward_program_evm_script_factory,
 ):
     simulate_full_flow(
-        token,
-        jumpgate,
+        ldo,
+        ldo_jumpgate,
         easytrack,
         bridge,
         reward_programs_registry,

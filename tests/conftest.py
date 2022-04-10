@@ -122,17 +122,7 @@ def destrudo(owner):
     return Destrudo.deploy({"from": owner})
 
 
-@pytest.fixture
-def token_holder(accounts):
-    return accounts.at(LDO_HOLDER, force=True)
-
-
-@pytest.fixture
-def bridge(interface):
-    return interface.IWormholeTokenBridge(WORMHOLE_TOKEN_BRIDGE_ADDRESS)
-
-
-@pytest.fixture(scope="function")
+@pytest.fixture()
 def jumpgate(owner, token, bridge):
     return Jumpgate.deploy(
         owner.address,
@@ -143,6 +133,37 @@ def jumpgate(owner, token, bridge):
         0,
         {"from": owner},
     )
+
+
+# Integrated tests
+
+
+@pytest.fixture
+def ldo_holder(accounts):
+    return accounts.at(LDO_HOLDER, force=True)
+
+
+@pytest.fixture
+def ldo():
+    return init_ldo(LDO_ADDRESS)
+
+
+@pytest.fixture()
+def ldo_jumpgate(owner, ldo, bridge):
+    return Jumpgate.deploy(
+        owner.address,
+        ldo.address,
+        bridge.address,
+        TERRA_WORMHOLE_CHAIN_ID,
+        encode_terra_address(TERRA_RANDOM_ADDRESS),
+        0,
+        {"from": owner},
+    )
+
+
+@pytest.fixture
+def bridge(interface):
+    return interface.IWormholeTokenBridge(WORMHOLE_TOKEN_BRIDGE_ADDRESS)
 
 
 @pytest.fixture
