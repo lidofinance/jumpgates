@@ -14,7 +14,7 @@ Jumpgates facilitate cross-chain token transfers under the Lido DAO incentive pr
 
 A jumpgate is a simple contract that transfers tokens via a cross-chain token bridge, such as Wormhole, Terra Shuttle, etc. The parameters of the transportation (the token, recipient, bridge) are predefined and immutable for each invididual jumpgate which makes its operation safe and permissionless. Jumpgates also provide permissioned ways to recover ether, ERC20, ERC721 and ERC1155 tokens.
 
-As Ethereum-native Lido expands other blockchains, jumpgates reduce operational overhead associated with routine cross-chain token transfers under the Lido DAO by providing a permissionless way to bridge tokens.
+As Ethereum-native Lido expands to other blockchains, jumpgates reduce operational overhead associated with routine cross-chain token transfers under the Lido DAO by providing a permissionless way to bridge tokens.
 
 For further details [read ADR](https://hackmd.io/snwPWGqBS-ax5Ur0A5Ix5w?view).
 
@@ -68,7 +68,7 @@ $ export ETHERSCAN_TOKEN=%YOUR-ETHERSCAN-TOKEN%
 
 #### Step 6 (optional). Add a Goerli development fork.
 
-The project uses the `mainnet-fork` network by default. If you want to check your jumpgate deploys or run a test suit on Goerli, you can add `goerli-fork` by running the following command,
+The project uses the `mainnet-fork` network by default. If you want to check your jumpgate deploys or run the test suite on Goerli, you can add `goerli-fork` by running the following command,
 
 ```bash
 $ brownie networks add "Development" goerli-fork host=http://127.0.0.1 cmd=ganache-cli port=8545 gas_limit=12000000 fork=https://goerli.infura.io/v3/${WEB3_INFURA_PROJECT_ID} chain_id=5 mnemonic=brownie accounts=10 fork=goerli
@@ -78,7 +78,7 @@ $ brownie networks add "Development" goerli-fork host=http://127.0.0.1 cmd=ganac
 
 Before you proceed, please follow [Getting Started](#-getting-started) instructions.
 
-To run the entire test suit, execute the following command,
+To run the entire test suite, execute the following command,
 
 ```bash
 $ brownie test
