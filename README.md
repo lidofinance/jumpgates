@@ -83,12 +83,13 @@ To run the entire test suit, execute the following command,
 ```bash
 $ brownie test
 ```
+Alternatively, you can run a specific test module by specifying the path,
 
 ```bash
 $ brownie test tests/test_jumpgate_unit.py
 ```
 
-Note! This project uses `mainnet-fork` by default. To run tests
+Note! This project uses `mainnet-fork` by default.
 
 Learn more about Brownie [tests](https://eth-brownie.readthedocs.io/en/stable/tests-pytest-intro.html).
 
