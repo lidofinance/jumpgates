@@ -73,7 +73,7 @@ contract Jumpgate is AssetRecoverer {
     }
 
     /// @notice transfer all of the tokens on this contract's balance to the cross-chain recipient
-    /// @dev permissionless method; caller only pays for bridging gas
+    /// @dev require amount >= 10**10 because Wormhole Token Bridge truncates some decimals due to post-bridging decimal shift
     function bridgeTokens() public {
         uint256 amount = token.balanceOf(address(this));
         require(amount >= 10**10, "Amount too small for bridging!");
