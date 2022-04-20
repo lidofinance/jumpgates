@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "jumpgates"
+version = "0.1.0"
+description = ""
+authors = ["Azat Serikov <azatsdev@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = ">=3.8,<3.10"
+eth-brownie = "1.17.2"
+bech32 = "1.2.0"
+Brownie = "0.5.1"
+eth-abi = "2.1.1"
+eth-utils = "1.10.0"
+pytest = "6.2.5"
+solana = "0.18.3"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
