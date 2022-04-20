@@ -25,32 +25,26 @@ This project uses Brownie development framework. Learn more about [Brownie](http
 ### Prerequisites
 
 - Python 3.8+
+- Poetry 1.1.13
 
-#### Step 1. Create a Python virtual environment.
-
-```bash
-$ python3 -m venv venv
-```
-
-#### Step 2. Activate the virtual environment.
+#### Step 1. Install Python dependencies.
+Install project dependendencies from the lockfile,
 
 ```bash
-$ source venv/bin/activate
+$ poetry install
 ```
 
-#### Step 3. Install Python dependencies.
+#### Step 2. Activate venv.
+Activate Poetry virtual environment,
 
 ```bash
-$ pip3 install -r requirements.txt
+$ poetry shell
 ```
 
-Note! The `solana` package may have conflicts with `eth_brownie`, in which case try installing the former individually,
+Learn more about [Poetry](https://python-poetry.org/docs/).
 
-```bash
-$ pip3 install solana
-```
 
-#### Step 4. Specify your Infura project id.
+#### Step 3. Specify your Infura project id.
 
 Replace `%YOUR-INFURA-PROJECT-ID%` below with your actual project id. Learn more about [Infura](https://infura.io/).
 
@@ -58,7 +52,7 @@ Replace `%YOUR-INFURA-PROJECT-ID%` below with your actual project id. Learn more
 $ export WEB3_INFURA_PROJECT_ID=%YOUR-INFURA-PROJECT-ID%
 ```
 
-#### Step 5 (recommended). Specify your Etherscan API key.
+#### Step 4 (recommended). Specify your Etherscan API key.
 
 Replace `%YOUR-ETHERSCAN-TOKEN%` below with your actual API key. Learn more about [Etherscan API](https://etherscan.io/apis).
 
@@ -66,7 +60,7 @@ Replace `%YOUR-ETHERSCAN-TOKEN%` below with your actual API key. Learn more abou
 $ export ETHERSCAN_TOKEN=%YOUR-ETHERSCAN-TOKEN%
 ```
 
-#### Step 6 (optional). Add a Goerli development fork.
+#### Step 5 (optional). Add a Goerli development fork.
 
 The project uses the `mainnet-fork` network by default. If you want to check your jumpgate deploys or run the test suite on Goerli, you can add `goerli-fork` by running the following command,
 
