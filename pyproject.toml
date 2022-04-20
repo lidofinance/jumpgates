@@ -6,7 +6,7 @@ authors = ["Azat Serikov <azatsdev@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = ">=3.8,<3.10"
-eth-brownie = "1.17.2"
+eth-brownie = "1.17.1"
 bech32 = "1.2.0"
 Brownie = "0.5.1"
 eth-abi = "2.1.1"
