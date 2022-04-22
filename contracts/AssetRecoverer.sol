@@ -12,6 +12,8 @@ import "OpenZeppelin/openzeppelin-contracts@4.5.0/contracts/token/ERC1155/IERC11
 /// @notice Recover ether, ERC20, ERC721 and ERC1155 from a derived contract
 /// @dev inherit from this contract to enable authorized asset recovery
 abstract contract AssetRecoverer is Ownable {
+    using SafeERC20 for IERC20;
+
     event EtherRecovered(address indexed _recipient, uint256 _amount);
     event ERC20Recovered(
         address indexed _token,
@@ -50,8 +52,7 @@ abstract contract AssetRecoverer is Ownable {
         address _recipient,
         uint256 _amount
     ) public onlyOwner {
-        bool success = IERC20(_token).transfer(_recipient, _amount);
-        require(success);
+        IERC20(_token).safeTransfer(_recipient, _amount);
         emit ERC20Recovered(_token, _recipient, _amount);
     }
 

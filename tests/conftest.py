@@ -1,3 +1,4 @@
+from re import X
 import pytest
 from brownie import (
     Jumpgate,
@@ -17,6 +18,7 @@ from utils.config import (
     SOLANA_WORMHOLE_CHAIN_ID,
     TERRA_RANDOM_ADDRESS,
     TERRA_WORMHOLE_CHAIN_ID,
+    TETHER,
     TOP_UP_REWARD_PROGRAM_EVM_SCRIPT_FACTORY,
     WORMHOLE_TOKEN_BRIDGE_ADDRESS,
 )
@@ -25,6 +27,7 @@ from utils.contract import (
     init_easytrack,
     init_ldo,
     init_reward_programs_registry,
+    init_tether,
     init_top_up_reward_program_evm_script_factory,
 )
 from utils.encode import encode_terra_address
@@ -180,3 +183,42 @@ def top_up_reward_program_evm_script_factory(chain):
     return init_top_up_reward_program_evm_script_factory(
         TOP_UP_REWARD_PROGRAM_EVM_SCRIPT_FACTORY.get(chain.id)
     )
+
+
+@pytest.fixture
+def tether(chain):
+    return init_tether(TETHER.get(chain.id))
+
+
+@pytest.fixture
+def tether_holder_balance(tether):
+    decimals = tether.decimals()
+    return 10 ** (9 + decimals)
+
+
+@pytest.fixture
+def smallest_tether_amount():
+    return 1
+
+
+@pytest.fixture
+def one_tether(tether):
+    decimals = tether.decimals()
+    return 10 ** decimals
+
+
+@pytest.fixture(
+    params=["smallest_tether_amount", "one_tether", "tether_holder_balance"],
+)
+def tether_amount(request):
+    return request.getfixturevalue(request.param)
+
+
+@pytest.fixture
+def tether_holder(tether, accounts, tether_holder_balance):
+    tether_owner_address = tether.owner()
+    tether_owner = accounts.at(tether_owner_address, True)
+    tether.issue(tether_holder_balance, {"from": tether_owner})
+    holder = accounts.add()
+    tether.transfer(holder.address, tether_holder_balance, {"from": tether_owner})
+    return holder

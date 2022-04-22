@@ -52,3 +52,7 @@ def init_add_reward_program_evm_script_factory(address):
 
 def init_top_up_reward_program_evm_script_factory(address):
     return init_contract(address, interface.TopUpRewardProgramEvmScriptFactory)
+
+
+def init_tether(address):
+    return init_contract(address, interface.Tether)
