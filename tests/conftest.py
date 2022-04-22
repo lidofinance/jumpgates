@@ -10,6 +10,7 @@ from brownie import (
 )
 from utils.config import (
     ADD_REWARD_PROGRAM_EVM_SCRIPT_FACTORY,
+    BRIDGE_DUST_CUTOFF_DECIMALS,
     EASYTRACK,
     LDO,
     LDO_HOLDER,
@@ -69,15 +70,58 @@ def deploy_params(request):
     return request.param
 
 
+@pytest.fixture
+def smallest_denomination_amount():
+    return 1
+
+
+@pytest.fixture
+def bridge_cutoff_amount(token, smallest_denomination_amount):
+    if token.decimals() > BRIDGE_DUST_CUTOFF_DECIMALS:
+        return 10 ** (token.decimals() - BRIDGE_DUST_CUTOFF_DECIMALS)
+    return smallest_denomination_amount
+
+
+@pytest.fixture
+def bridge_cutoff_amount_minus_one(bridge_cutoff_amount, smallest_denomination_amount):
+    return bridge_cutoff_amount - smallest_denomination_amount
+
+
+@pytest.fixture
+def human_denomination_amount(token):
+    return 10 ** token.decimals()
+
+
+@pytest.fixture
+def amount_with_trailing_nonzero_decimals(
+    human_denomination_amount, smallest_denomination_amount
+):
+    return human_denomination_amount + smallest_denomination_amount
+
+
+@pytest.fixture(
+    params=[
+        "smallest_denomination_amount",
+        "bridge_cutoff_amount_minus_one",
+        "bridge_cutoff_amount",
+        "human_denomination_amount",
+        "amount_with_trailing_nonzero_decimals",
+    ],
+)
+def send_amount(request):
+    return request.getfixturevalue(request.param)
+
+
 # ERC20
 @pytest.fixture
 def token_holder():
     return accounts.add()
 
 
-@pytest.fixture
-def token(token_holder):
-    return MockERC20.deploy({"from": token_holder})
+# ERC20 with different decimals
+@pytest.fixture(params=[18, 12, 6, 0])
+def token(token_holder, request):
+    return MockERC20.deploy(request.param, {"from": token_holder})
 
 
 # ERC721

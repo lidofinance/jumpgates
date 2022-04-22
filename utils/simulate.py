@@ -1,7 +1,7 @@
 from brownie import accounts, network
 from eth_abi import encode_single
 from eth_utils import to_wei
-from utils.config import BRIDGE_DUST_CUTOFF
+from utils.config import BRIDGE_DUST_CUTOFF_DECIMALS
 
 
 def enact_motion(easytrack, evm_script_factory, calldata):
@@ -49,6 +49,7 @@ def simulate_full_flow(
     add_reward_program_evm_script_factory,
     top_up_reward_program_evm_script_factory,
     owner,
+    bridge_cutoff_amount,
 ):
     # register Jumpgate as a Reward Program
     enact_motion(
@@ -85,7 +86,7 @@ def simulate_full_flow(
     assert events["Approval"]["_amount"] == amount
 
     # Wormhole Bridge ignores dust due to the decimal shift
-    if amount < BRIDGE_DUST_CUTOFF:
+    if amount < bridge_cutoff_amount:
         assert "Transfer" not in events
     else:
         assert "Transfer" in events

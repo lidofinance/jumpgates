@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 import "OpenZeppelin/openzeppelin-contracts@4.5.0/contracts/token/ERC20/ERC20.sol";
 
 import "./AssetRecoverer.sol";
+import "./SafeAmounts.sol";
 import "../interfaces/IWormholeTokenBridge.sol";
 
 /// @title Jumpgate
@@ -11,6 +12,8 @@ import "../interfaces/IWormholeTokenBridge.sol";
 /// @notice Transfer an ERC20 token using a Wormhole token bridge with pre-determined parameters
 /// @dev `IWormholeTokenBridge` and the logic in `_callBridgeTransfer` are specific to Wormhole Token Bridge
 contract Jumpgate is AssetRecoverer {
+    using SafeAmounts for uint256;
+
     event JumpgateCreated(
         address indexed _jumpgate,
         address indexed _token,
@@ -73,13 +76,19 @@ contract Jumpgate is AssetRecoverer {
     }
 
     /// @notice transfer all of the tokens on this contract's balance to the cross-chain recipient
-    /// @dev require amount >= 10**10 because Wormhole Token Bridge truncates some decimals due to post-bridging decimal shift
+    /// @dev amount is normalized due to bridging decimal shift which sometimes truncates decimals
     function bridgeTokens() public {
         uint256 amount = token.balanceOf(address(this));
-        require(amount >= 10**10, "Amount too small for bridging!");
+        uint8 decimals = getDecimals();
+        uint256 normalizedAmount = amount.normalizeAmount(decimals);
+        require(normalizedAmount > 0, "Amount too small for bridging!");
 
-        token.approve(address(bridge), amount);
-        uint64 sequence = _callBridgeTransfer(amount);
+        uint256 denormalizedAmount = normalizedAmount.denormalizeAmount(
+            decimals
+        );
+
+        token.approve(address(bridge), denormalizedAmount);
+        uint64 sequence = _callBridgeTransfer(denormalizedAmount);
 
         emit TokensBridged(
             address(token),
@@ -87,7 +96,7 @@ contract Jumpgate is AssetRecoverer {
             recipientChain,
             recipient,
             arbiterFee,
-            amount,
+            denormalizedAmount,
             0,
             sequence
         );
@@ -108,5 +117,12 @@ contract Jumpgate is AssetRecoverer {
             arbiterFee,
             0
         );
+    }
+
+    function getDecimals() internal view returns (uint8 decimals) {
+        (, bytes memory queriedDecimals) = address(token).staticcall(
+            abi.encodeWithSignature("decimals()")
+        );
+        decimals = abi.decode(queriedDecimals, (uint8));
     }
 }

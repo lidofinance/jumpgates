@@ -1,5 +1,5 @@
 from brownie import Jumpgate, reverts
-from utils.config import BRIDGE_DUST_CUTOFF
+from utils.amount import get_bridgeable_amount
 from utils.constants import one_quintillion
 from utils.encode import get_address_encoder
 import pytest
@@ -200,19 +200,25 @@ def test_send_erc1155_to_jumpgate(
         )
 
 
-@pytest.mark.parametrize(
-    "amount",
-    [0, 1, BRIDGE_DUST_CUTOFF - 1, BRIDGE_DUST_CUTOFF, one_quintillion],
-)
-def test_bridge_tokens(jumpgate, token, amount, token_holder, bridge):
+def test_bridge_tokens(
+    jumpgate,
+    token,
+    send_amount,
+    token_holder,
+    bridge,
+    bridge_cutoff_amount,
+):
     # transfer tokens the jumpgate
-    token.transfer(jumpgate.address, amount, {"from": token_holder})
-    assert token.balanceOf(jumpgate.address) == amount
+    token.transfer(jumpgate.address, send_amount, {"from": token_holder})
+    assert token.balanceOf(jumpgate.address) == send_amount
 
     bridge_balance_before = token.balanceOf(bridge.address)
 
+    bridgeable_amount = get_bridgeable_amount(send_amount, token.decimals())
+    print(bridgeable_amount)
+
     # bridgeTokens
-    if amount < BRIDGE_DUST_CUTOFF:
+    if bridgeable_amount < bridge_cutoff_amount:
         with reverts("Amount too small for bridging!"):
             jumpgate.bridgeTokens()
     else:
@@ -221,19 +227,17 @@ def test_bridge_tokens(jumpgate, token, amount, token_holder, bridge):
         assert "Approval" in tx.events
         assert tx.events["Approval"]["owner"] == jumpgate.address
         assert tx.events["Approval"]["spender"] == bridge.address
-        assert tx.events["Approval"]["value"] == amount
+        assert tx.events["Approval"]["value"] == bridgeable_amount
 
         assert "Transfer" in tx.events
         assert tx.events["Transfer"]["from"] == jumpgate.address
         assert tx.events["Transfer"]["to"] == bridge.address
-        assert tx.events["Transfer"]["value"] == amount
+        assert tx.events["Transfer"]["value"] == bridgeable_amount
 
+        assert token.balanceOf(jumpgate.address) == send_amount - bridgeable_amount
         assert (
-            token.balanceOf(jumpgate.address) == 0
-            if amount >= BRIDGE_DUST_CUTOFF
-            else amount
+            token.balanceOf(bridge.address) == bridge_balance_before + bridgeable_amount
         )
-        assert token.balanceOf(bridge.address) == bridge_balance_before + amount
 
         assert "LogMessagePublished" in tx.events
         assert tx.events["LogMessagePublished"]["sender"] == bridge.address
@@ -249,7 +253,7 @@ def test_bridge_tokens(jumpgate, token, amount, token_holder, bridge):
         )
         assert tx.events["TokensBridged"]["_recipient"] == jumpgate.recipient()
         assert tx.events["TokensBridged"]["_arbiterFee"] == jumpgate.arbiterFee()
-        assert tx.events["TokensBridged"]["_amount"] == amount
+        assert tx.events["TokensBridged"]["_amount"] == bridgeable_amount
         assert tx.events["TokensBridged"]["_nonce"] == 0
         assert (
             tx.events["TokensBridged"]["_transferSequence"]

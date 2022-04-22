@@ -1,4 +1,3 @@
-import pytest
 from utils.simulate import simulate_full_flow
 
 
@@ -11,6 +10,7 @@ def test_full_flow(
     add_reward_program_evm_script_factory,
     top_up_reward_program_evm_script_factory,
     owner,
+    bridge_cutoff_amount,
 ):
     simulate_full_flow(
         ldo,
@@ -21,6 +21,7 @@ def test_full_flow(
         add_reward_program_evm_script_factory,
         top_up_reward_program_evm_script_factory,
         owner,
+        bridge_cutoff_amount,
     )
 
 
