@@ -1,5 +1,6 @@
 from brownie import Jumpgate, reverts
 from utils.amount import get_bridgeable_amount
+from utils.config import BRIDGING_CAP
 from utils.constants import one_quintillion
 from utils.encode import get_address_encoder
 import pytest
@@ -215,11 +216,13 @@ def test_bridge_tokens(
     bridge_balance_before = token.balanceOf(bridge.address)
 
     bridgeable_amount = get_bridgeable_amount(send_amount, token.decimals())
-    print(bridgeable_amount)
 
     # bridgeTokens
     if bridgeable_amount < bridge_cutoff_amount:
         with reverts("Amount too small for bridging!"):
+            jumpgate.bridgeTokens()
+    elif bridgeable_amount > BRIDGING_CAP:
+        with reverts("transfer exceeds max outstanding bridged token amount"):
             jumpgate.bridgeTokens()
     else:
         tx = jumpgate.bridgeTokens()

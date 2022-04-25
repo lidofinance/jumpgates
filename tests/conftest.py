@@ -1,4 +1,3 @@
-from re import X
 import pytest
 from brownie import (
     Jumpgate,
@@ -8,9 +7,11 @@ from brownie import (
     MockERC721,
     MockERC1155,
 )
+from utils.amount import get_bridgeable_amount
 from utils.config import (
     ADD_REWARD_PROGRAM_EVM_SCRIPT_FACTORY,
     BRIDGE_DUST_CUTOFF_DECIMALS,
+    BRIDGING_CAP,
     EASYTRACK,
     LDO,
     LDO_HOLDER,
@@ -71,6 +72,11 @@ def deploy_params(request):
 
 
 @pytest.fixture
+def zero_amount():
+    return 0
+
+
+@pytest.fixture
 def smallest_denomination_amount():
     return 1
 
@@ -99,13 +105,28 @@ def amount_with_trailing_nonzero_decimals(
     return human_denomination_amount + smallest_denomination_amount
 
 
+@pytest.fixture
+def max_bridging_amount():
+    return BRIDGING_CAP
+
+
+@pytest.fixture
+def amount_exceeding_cap(token):
+    decimals = token.decimals()
+    bridgeable_max = get_bridgeable_amount(BRIDGING_CAP, decimals)
+    overspill = 10 ** decimals
+    return bridgeable_max + overspill
+
+
 @pytest.fixture(
     params=[
+        "zero_amount",
         "smallest_denomination_amount",
         "bridge_cutoff_amount_minus_one",
         "bridge_cutoff_amount",
         "human_denomination_amount",
         "amount_with_trailing_nonzero_decimals",
+        "amount_exceeding_cap",
     ],
 )
 def send_amount(request):
@@ -119,7 +140,7 @@ def token_holder():
 
 
 # ERC20 with different decimals
-@pytest.fixture(params=[18, 12, 6, 0])
+@pytest.fixture(params=[24, 18, 12, 6, 0])
 def token(token_holder, request):
     return MockERC20.deploy(request.param, {"from": token_holder})
 
