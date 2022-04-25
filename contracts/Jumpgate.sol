@@ -49,6 +49,9 @@ contract Jumpgate is AssetRecoverer {
     /// Wormhole arbiter fee
     uint256 public immutable arbiterFee;
 
+    /// Transfer nonce
+    uint32 public immutable nonce = 0;
+
     constructor(
         address _owner,
         address _token,
@@ -97,7 +100,7 @@ contract Jumpgate is AssetRecoverer {
             recipient,
             arbiterFee,
             denormalizedAmount,
-            0,
+            nonce,
             sequence
         );
     }
@@ -115,7 +118,7 @@ contract Jumpgate is AssetRecoverer {
             recipientChain,
             recipient,
             arbiterFee,
-            0
+            nonce
         );
     }
 
