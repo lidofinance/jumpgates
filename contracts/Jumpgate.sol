@@ -80,7 +80,7 @@ contract Jumpgate is AssetRecoverer {
 
     /// @notice transfer all of the tokens on this contract's balance to the cross-chain recipient
     /// @dev amount is normalized due to bridging decimal shift which sometimes truncates decimals
-    function bridgeTokens() public {
+    function bridgeTokens() external {
         uint256 amount = token.balanceOf(address(this));
         uint8 decimals = getDecimals();
         uint256 normalizedAmount = amount.normalizeAmount(decimals);
