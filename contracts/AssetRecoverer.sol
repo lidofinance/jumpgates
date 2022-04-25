@@ -32,6 +32,10 @@ abstract contract AssetRecoverer is Ownable {
         uint256 _amount
     );
 
+    /// @notice prevents `owner` from renouncing ownership and potentially locking assets forever
+    /// @dev overrides Ownable's renounceOwnership with noop
+    function renounceOwnership() public override onlyOwner {}
+
     /// @notice recover all of ether on this contract as the owner
     /// @dev using the safer `call` instead of `transfer`
     /// @param _recipient address to send ether to

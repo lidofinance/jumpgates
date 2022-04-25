@@ -42,6 +42,12 @@ def test_deploy_parameters(token, bridge, owner, deploy_params):
     assert jumpgate.tx.events["JumpgateCreated"]["_arbiterFee"] == arbiter_fee
 
 
+def test_renounce_ownership(jumpgate, owner):
+    # make sure renounceOwnership is a noop
+    jumpgate.renounceOwnership()
+    assert jumpgate.owner() == owner.address
+
+
 @pytest.mark.parametrize("amount", [0, 1, one_quintillion])
 def test_recover_ether(
     jumpgate,
