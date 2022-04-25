@@ -33,7 +33,7 @@ abstract contract AssetRecoverer is Ownable {
     );
 
     /// @notice recover all of ether on this contract as the owner
-    /// @dev using the safer `call` instead for `transfer`
+    /// @dev using the safer `call` instead of `transfer`
     /// @param _recipient address to send ether to
     function recoverEther(address _recipient) public onlyOwner {
         uint256 amount = address(this).balance;
