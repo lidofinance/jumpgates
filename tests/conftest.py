@@ -1,5 +1,6 @@
 import pytest
 from brownie import (
+    ZERO_ADDRESS,
     Jumpgate,
     Destrudo,
     accounts,
@@ -53,6 +54,17 @@ def non_owner(accounts):
 @pytest.fixture(scope="session")
 def stranger(accounts):
     return accounts[2]
+
+
+@pytest.fixture(scope="session")
+def zero_address(accounts):
+    return accounts.at(ZERO_ADDRESS, True)
+
+
+# test asset recovery for actual recipient and burns
+@pytest.fixture(scope="session", params=["stranger", "zero_address"])
+def recipient(request):
+    return request.getfixturevalue(request.param)
 
 
 # test as the owner and a non-owner

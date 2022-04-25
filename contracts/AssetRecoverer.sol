@@ -32,6 +32,11 @@ abstract contract AssetRecoverer is Ownable {
         uint256 _amount
     );
 
+    modifier burnDisallowed(address _recipient) {
+        require(_recipient != address(0), "Recipient cannot be zero address!");
+        _;
+    }
+
     /// @notice prevents `owner` from renouncing ownership and potentially locking assets forever
     /// @dev overrides Ownable's renounceOwnership with noop
     function renounceOwnership() public override onlyOwner {}
@@ -39,7 +44,11 @@ abstract contract AssetRecoverer is Ownable {
     /// @notice recover all of ether on this contract as the owner
     /// @dev using the safer `call` instead of `transfer`
     /// @param _recipient address to send ether to
-    function recoverEther(address _recipient) external onlyOwner {
+    function recoverEther(address _recipient)
+        external
+        onlyOwner
+        burnDisallowed(_recipient)
+    {
         uint256 amount = address(this).balance;
         (bool success, ) = _recipient.call{value: amount}("");
         require(success);
@@ -55,7 +64,7 @@ abstract contract AssetRecoverer is Ownable {
         address _token,
         address _recipient,
         uint256 _amount
-    ) external onlyOwner {
+    ) external onlyOwner burnDisallowed(_recipient) {
         IERC20(_token).safeTransfer(_recipient, _amount);
         emit ERC20Recovered(_token, _recipient, _amount);
     }
@@ -69,7 +78,7 @@ abstract contract AssetRecoverer is Ownable {
         address _token,
         uint256 _tokenId,
         address _recipient
-    ) external onlyOwner {
+    ) external onlyOwner burnDisallowed(_recipient) {
         IERC721(_token).safeTransferFrom(address(this), _recipient, _tokenId);
         emit ERC721Recovered(_token, _tokenId, _recipient);
     }
@@ -83,7 +92,7 @@ abstract contract AssetRecoverer is Ownable {
         address _token,
         uint256 _tokenId,
         address _recipient
-    ) external onlyOwner {
+    ) external onlyOwner burnDisallowed(_recipient) {
         uint256 amount = IERC1155(_token).balanceOf(address(this), _tokenId);
         IERC1155(_token).safeTransferFrom(
             address(this),
