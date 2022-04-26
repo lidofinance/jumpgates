@@ -1,8 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity 0.8.13;
 
-library SafeAmounts {
-    function normalizeAmount(uint256 amount, uint8 decimals)
+/// @title Normalized Amounts
+/// @author mymphe
+/// @notice normalize and denormalize amounts for safer transfers via Wormhole
+/// @dev Wormhole Token Bridge normalizes transfer amount to 8 decimals
+library NormalizedAmounts {
+    function normalize(uint256 amount, uint8 decimals)
         internal
         pure
         returns (uint256)
@@ -13,7 +17,7 @@ library SafeAmounts {
         return amount;
     }
 
-    function denormalizeAmount(uint256 amount, uint8 decimals)
+    function denormalize(uint256 amount, uint8 decimals)
         internal
         pure
         returns (uint256)

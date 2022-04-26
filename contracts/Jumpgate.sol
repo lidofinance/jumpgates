@@ -5,7 +5,7 @@ import "OpenZeppelin/openzeppelin-contracts@4.5.0/contracts/token/ERC20/ERC20.so
 import "OpenZeppelin/openzeppelin-contracts@4.5.0/contracts/token/ERC20/utils/SafeERC20.sol";
 
 import "./AssetRecoverer.sol";
-import "./SafeAmounts.sol";
+import "./NormalizedAmounts.sol";
 import "../interfaces/IWormholeTokenBridge.sol";
 
 /// @title Jumpgate
@@ -13,7 +13,7 @@ import "../interfaces/IWormholeTokenBridge.sol";
 /// @notice Transfer an ERC20 token using a Wormhole token bridge with pre-determined parameters
 /// @dev `IWormholeTokenBridge` and the logic in `_callBridgeTransfer` are specific to Wormhole Token Bridge
 contract Jumpgate is AssetRecoverer {
-    using SafeAmounts for uint256;
+    using NormalizedAmounts for uint256;
     using SafeERC20 for IERC20;
 
     event JumpgateCreated(
@@ -84,12 +84,9 @@ contract Jumpgate is AssetRecoverer {
     function bridgeTokens() external {
         uint256 amount = token.balanceOf(address(this));
         uint8 decimals = getDecimals();
-        uint256 normalizedAmount = amount.normalizeAmount(decimals);
+        uint256 normalizedAmount = amount.normalize(decimals);
         require(normalizedAmount > 0, "Amount too small for bridging!");
-
-        uint256 denormalizedAmount = normalizedAmount.denormalizeAmount(
-            decimals
-        );
+        uint256 denormalizedAmount = normalizedAmount.denormalize(decimals);
 
         token.safeApprove(address(bridge), denormalizedAmount);
         uint64 sequence = _callBridgeTransfer(denormalizedAmount);
