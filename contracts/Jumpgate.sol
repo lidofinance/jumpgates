@@ -2,6 +2,7 @@
 pragma solidity 0.8.13;
 
 import "OpenZeppelin/openzeppelin-contracts@4.5.0/contracts/token/ERC20/ERC20.sol";
+import "OpenZeppelin/openzeppelin-contracts@4.5.0/contracts/token/ERC20/utils/SafeERC20.sol";
 
 import "./AssetRecoverer.sol";
 import "./SafeAmounts.sol";
@@ -13,6 +14,7 @@ import "../interfaces/IWormholeTokenBridge.sol";
 /// @dev `IWormholeTokenBridge` and the logic in `_callBridgeTransfer` are specific to Wormhole Token Bridge
 contract Jumpgate is AssetRecoverer {
     using SafeAmounts for uint256;
+    using SafeERC20 for IERC20;
 
     event JumpgateCreated(
         address indexed _jumpgate,
@@ -89,7 +91,7 @@ contract Jumpgate is AssetRecoverer {
             decimals
         );
 
-        token.approve(address(bridge), denormalizedAmount);
+        token.safeApprove(address(bridge), denormalizedAmount);
         uint64 sequence = _callBridgeTransfer(denormalizedAmount);
 
         emit TokensBridged(
