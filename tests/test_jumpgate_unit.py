@@ -43,8 +43,10 @@ def test_deploy_parameters(token, bridge, owner, deploy_params):
 
 
 def test_renounce_ownership(jumpgate, owner):
-    # make sure renounceOwnership is a noop
-    jumpgate.renounceOwnership()
+    # make sure renounceOwnership reverts
+    with reverts("Renouncing ownership disabled!"):
+        jumpgate.renounceOwnership()
+
     assert jumpgate.owner() == owner.address
 
 

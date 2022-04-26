@@ -39,7 +39,9 @@ abstract contract AssetRecoverer is Ownable {
 
     /// @notice prevents `owner` from renouncing ownership and potentially locking assets forever
     /// @dev overrides Ownable's renounceOwnership with noop
-    function renounceOwnership() public override onlyOwner {}
+    function renounceOwnership() public view override onlyOwner {
+        revert("Renouncing ownership disabled!");
+    }
 
     /// @notice recover all of ether on this contract as the owner
     /// @dev using the safer `call` instead of `transfer`
