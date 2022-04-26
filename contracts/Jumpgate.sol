@@ -80,7 +80,7 @@ contract Jumpgate is AssetRecoverer {
     }
 
     /// @notice transfer all of the tokens on this contract's balance to the cross-chain recipient
-    /// @dev amount is normalized due to bridging decimal shift which sometimes truncates decimals
+    /// @dev transfer amount is normalized due to bridging decimal shift which sometimes truncates decimals
     function bridgeTokens() external {
         uint256 amount = token.balanceOf(address(this));
         uint8 decimals = getDecimals();
@@ -119,6 +119,9 @@ contract Jumpgate is AssetRecoverer {
         );
     }
 
+    /// @notice get number of token decimals for normalization
+    /// @dev using low-level `staticcall` because OpenZeppelin IERC20 doesn't include `decimals()`
+    /// @return decimals number of token decimals
     function getDecimals() internal view returns (uint8 decimals) {
         (, bytes memory queriedDecimals) = address(token).staticcall(
             abi.encodeWithSignature("decimals()")

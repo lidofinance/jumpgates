@@ -10,7 +10,7 @@ import "OpenZeppelin/openzeppelin-contracts@4.5.0/contracts/token/ERC1155/IERC11
 /// @title Asset Recoverer
 /// @author mymphe
 /// @notice Recover ether, ERC20, ERC721 and ERC1155 from a derived contract
-/// @dev inherit from this contract to enable authorized asset recovery
+/// @dev inherit from this contract to enable permissioned asset recovery
 abstract contract AssetRecoverer is Ownable {
     using SafeERC20 for IERC20;
 
@@ -32,13 +32,16 @@ abstract contract AssetRecoverer is Ownable {
         uint256 _amount
     );
 
+    /// @notice prevents burn for recovery functions
+    /// @dev checks for zero address and reverts if true
+    /// @param _recipient address of the recovery recipient
     modifier burnDisallowed(address _recipient) {
         require(_recipient != address(0), "Recipient cannot be zero address!");
         _;
     }
 
     /// @notice prevents `owner` from renouncing ownership and potentially locking assets forever
-    /// @dev overrides Ownable's renounceOwnership with noop
+    /// @dev overrides Ownable's renounceOwnership to always revert
     function renounceOwnership() public view override onlyOwner {
         revert("Renouncing ownership disabled!");
     }
@@ -72,7 +75,7 @@ abstract contract AssetRecoverer is Ownable {
     }
 
     /// @notice recover an ERC721 token on this contract's balance as the owner
-    /// @dev safeTransferFrom doesn't return a bool as it performs an internal `require` check
+    /// @dev IERC721.safeTransferFrom doesn't return a bool as it performs an internal `require` check
     /// @param _token address of the ERC721 token that is being recovered
     /// @param _tokenId id of the individual token to transfer
     /// @param _recipient address to transfer the token to
