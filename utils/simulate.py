@@ -110,7 +110,6 @@ def simulate_full_flow(
     assert events["TokensBridged"]["_recipient"] == jumpgate.recipient()
     assert events["TokensBridged"]["_arbiterFee"] == jumpgate.arbiterFee()
     assert events["TokensBridged"]["_amount"] == amount
-    assert events["TokensBridged"]["_nonce"] == 0
     assert (
         events["TokensBridged"]["_transferSequence"]
         == events["LogMessagePublished"]["sequence"]

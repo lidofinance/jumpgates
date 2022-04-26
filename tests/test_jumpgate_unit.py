@@ -288,7 +288,6 @@ def test_bridge_tokens(
         assert tx.events["TokensBridged"]["_recipient"] == jumpgate.recipient()
         assert tx.events["TokensBridged"]["_arbiterFee"] == jumpgate.arbiterFee()
         assert tx.events["TokensBridged"]["_amount"] == bridgeable_amount
-        assert tx.events["TokensBridged"]["_nonce"] == 0
         assert (
             tx.events["TokensBridged"]["_transferSequence"]
             == tx.events["LogMessagePublished"]["sequence"]

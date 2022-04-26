@@ -30,7 +30,6 @@ contract Jumpgate is AssetRecoverer {
         bytes32 _recipient,
         uint256 _arbiterFee,
         uint256 _amount,
-        uint32 _nonce,
         uint64 _transferSequence
     );
 
@@ -100,7 +99,6 @@ contract Jumpgate is AssetRecoverer {
             recipient,
             arbiterFee,
             denormalizedAmount,
-            nonce,
             sequence
         );
     }
