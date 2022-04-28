@@ -51,7 +51,7 @@ contract Jumpgate is AssetRecoverer {
     uint256 public immutable arbiterFee;
 
     /// Transfer nonce
-    uint32 public immutable nonce = 0;
+    uint32 public constant nonce = 0;
 
     constructor(
         address _owner,
