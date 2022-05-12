@@ -9,13 +9,14 @@ from utils.config import (
 )
 from utils.encode import get_address_encoder
 
-NETWORK = get_env("NETWORK")
 
-# deploy essentials
+# environment
 WEB3_INFURA_PROJECT_ID = get_env("WEB3_INFURA_PROJECT_ID")
-DEPLOYER = get_env("DEPLOYER")
+ETHERSCAN_TOKEN = get_env("ETHERSCAN_TOKEN")
 
 # deploy parameters
+DEPLOYER = get_env("DEPLOYER")
+NETWORK = get_env("NETWORK")
 TOKEN = get_env("TOKEN")
 BRIDGE = get_env("BRIDGE")
 RECIPIENT_CHAIN = int(get_env("RECIPIENT_CHAIN"))
@@ -26,6 +27,20 @@ SUPPORTED_CHAINS = [TERRA_WORMHOLE_CHAIN_ID, SOLANA_WORMHOLE_CHAIN_ID]
 
 
 def main():
+    log.info("Checking environment variables...")
+
+    if not WEB3_INFURA_PROJECT_ID:
+        log.error("`WEB3_INFURA_PROJECT_ID` not found!")
+        return
+
+    if not ETHERSCAN_TOKEN:
+        log.error("`ETHERSCAN_TOKEN` not found!")
+        return
+
+    log.okay("Environment variables are present!")
+
+    log.info("Checking deploy parameters...")
+
     if not NETWORK:
         log.error("`NETWORK` not found!")
         return
@@ -34,12 +49,14 @@ def main():
         log.error(f"Wrong network! Expected `{NETWORK}` but got", network.show_active())
         return
 
-    if not WEB3_INFURA_PROJECT_ID:
-        log.error("`WEB3_INFURA_PROJECT_ID` not found!")
-        return
-
     if not DEPLOYER:
         log.error("`DEPLOYER` not found!")
+        return
+
+    try:
+        deployer = accounts.load(DEPLOYER)
+    except FileNotFoundError:
+        log.error(f"Local account with id `{DEPLOYER}` not found!")
         return
 
     if not TOKEN:
@@ -62,9 +79,7 @@ def main():
         log.error("`RECIPIENT` not found!")
         return
 
-    deployer = accounts.load(DEPLOYER)
-
-    log.okay("All environment variables are present!")
+    log.okay("Deploy parameters are present!")
 
     log.info("NETWORK", NETWORK)
     log.info("DEPLOYER", deployer.address)
@@ -100,7 +115,7 @@ def main():
         recipient,
         arbiterFee,
         {"from": deployer},
-        publish_source=bool(get_env("ETHERSCAN_TOKEN")),
+        publish_source=bool(ETHERSCAN_TOKEN),
     )
 
     log.okay("Jumpgate deployed successfully!")
