@@ -4,12 +4,12 @@ import utils.log as log
 
 
 def init_contract(address, construct):
-    try:
-        contract = Contract.from_explorer(address)
-        log.okay(f"{address} initialized from explorer.")
-    except:
-        contract = construct(address)
-        log.okay(f"{address} initialized from abi.")
+    # try:
+    #     contract = Contract.from_explorer(address)
+    #     log.okay(f"{address} initialized from explorer.")
+    # except:
+    contract = construct(address)
+    log.okay(f"{construct} at {address} initialized from abi.")
 
     return contract
 
