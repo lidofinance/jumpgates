@@ -78,7 +78,6 @@ def simulate_full_flow(
     bridge_balance_before = token.balanceOf(bridge.address)
 
     events = jumpgate.bridgeTokens({"from": owner}).events
-    print(events)
 
     assert "Approval" in events
     assert events["Approval"]["_owner"] == jumpgate.address
