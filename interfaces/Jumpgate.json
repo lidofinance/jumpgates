@@ -3,6 +3,11 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "_owner",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
         "name": "_token",
         "type": "address"
       },
@@ -136,6 +141,12 @@
       {
         "indexed": true,
         "internalType": "address",
+        "name": "_jumpgate",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
         "name": "_token",
         "type": "address"
       },
@@ -227,12 +238,6 @@
       },
       {
         "indexed": false,
-        "internalType": "uint32",
-        "name": "_nonce",
-        "type": "uint32"
-      },
-      {
-        "indexed": false,
         "internalType": "uint64",
         "name": "_transferSequence",
         "type": "uint64"
@@ -272,6 +277,19 @@
     "name": "bridgeTokens",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "nonce",
+    "outputs": [
+      {
+        "internalType": "uint32",
+        "name": "",
+        "type": "uint32"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -399,7 +417,7 @@
     "inputs": [],
     "name": "renounceOwnership",
     "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {
