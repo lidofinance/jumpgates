@@ -33,9 +33,9 @@ def main():
         log.error("`WEB3_INFURA_PROJECT_ID` not found!")
         return
 
-    if not ETHERSCAN_TOKEN:
-        log.error("`ETHERSCAN_TOKEN` not found!")
-        return
+    # if not ETHERSCAN_TOKEN:
+    #     log.error("`ETHERSCAN_TOKEN` not found!")
+    #     return
 
     log.okay("Environment variables are present!")
 

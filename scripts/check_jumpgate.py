@@ -129,6 +129,7 @@ def main():
         add_reward_program_evm_script_factory,
         top_up_reward_program_evm_script_factory,
         deployer,
+        0
     )
 
     log.okay("Full flow simulated successfully!")

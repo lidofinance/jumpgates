@@ -808,5 +808,27 @@
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "name": "src",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "name": "dst",
+        "type": "address"
+      }
+    ],
+    "name": "LogScriptCall",
+    "type": "event"
   }
 ]
