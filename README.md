@@ -3,9 +3,9 @@
   <img src="https://raw.githubusercontent.com/lidofinance/jumpgates/main/img/logo.png" width="100" align="left" />
 </div>
 
-![solidity ^0.8.0](https://img.shields.io/badge/solidity-%5E0.8.0-lightgray)
+![solidity 0.8.§3](https://img.shields.io/badge/solidity-0.8.13-lightgray)
 ![python ~3.8.9](https://img.shields.io/badge/python-~3.8.9-blue)
-![eth_brownie 1.17.1](https://img.shields.io/badge/eth__brownie-1.17.1-brown)
+![eth_brownie ^1.19.0](https://img.shields.io/badge/eth__brownie-^1.19.0-brown)
 ![license GPL](https://img.shields.io/badge/license-GPL-green)
 
 Jumpgates facilitate cross-chain token transfers under the Lido DAO incentive programs. Although autonomous, jumpgates are meant to be part of the Easy Track Rewards Program pipeline.
