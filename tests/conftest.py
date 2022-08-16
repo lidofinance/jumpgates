@@ -194,7 +194,7 @@ def destrudo(owner):
     return Destrudo.deploy({"from": owner})
 
 
-@pytest.fixture()
+@pytest.fixture(scope="function")
 def jumpgate(owner, token, bridge):
     return Jumpgate.deploy(
         owner.address,

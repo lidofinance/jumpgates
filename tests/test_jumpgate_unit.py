@@ -61,11 +61,14 @@ def test_recover_ether(
     # remember jumpgate balance before sending ether to it
     jumpgate_balance_before = jumpgate.balance()
 
+    # remember destrudo balance before destroying it
+    destrudo_balance_before = destrudo.balance()
+
     # send ether to jumpgate by self-destrucing another contract
     destrudo.destructSelf(jumpgate.address, {"value": amount, "from": sender})
 
     # make sure jumpgate received ether
-    assert jumpgate.balance() == jumpgate_balance_before + amount
+    assert jumpgate.balance() == jumpgate_balance_before + destrudo_balance_before + amount
 
     # remember jumpgate balance before recovery
     jumpgate_balance_before = jumpgate.balance()
