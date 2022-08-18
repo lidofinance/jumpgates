@@ -48,6 +48,17 @@ def main():
         log.error(f"Wrong network! Expected `{NETWORK}` but got", network.show_active())
         sys.exit()
 
+    OWNER = check_env_var("OWNER")
+
+    if not OWNER:
+        OWNER = deployer.address
+        log.warn("`OWNER` is not specified, the jumpgate owner will be the deployer.")
+
+        proceed = log.prompt_yes_no("Proceed?")
+        if not proceed:
+            log.error("Script stopped!")
+            sys.exit()
+
     TOKEN = check_env_var("TOKEN")
     BRIDGE = check_env_var("BRIDGE")
     RECIPIENT_CHAIN = int(check_env_var("RECIPIENT_CHAIN"))
@@ -77,6 +88,7 @@ def main():
 
     encode_address = get_address_encoder(RECIPIENT_CHAIN)
 
+    owner = OWNER
     token = TOKEN
     bridge = BRIDGE
     recipientChain = RECIPIENT_CHAIN
@@ -84,7 +96,7 @@ def main():
     arbiterFee = ARBITER_FEE
 
     jumpgate = Jumpgate.deploy(
-        deployer.address,
+        owner,
         token,
         bridge,
         recipientChain,
