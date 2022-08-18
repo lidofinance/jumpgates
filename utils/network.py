@@ -9,4 +9,4 @@ def is_development() -> bool:
         "mainnet-fork",
         "goerli-fork",
     ]
-    return network.show_active() not in dev_networks
+    return network.show_active() in dev_networks

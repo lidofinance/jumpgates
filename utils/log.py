@@ -3,6 +3,7 @@ color_green = "\033[92m"
 color_yellow = "\033[93m"
 color_blue = "\033[94m"
 color_red = "\033[31m"
+color_cyan = "\033[36m"
 color_end = "\033[0m"
 
 
@@ -11,8 +12,8 @@ def highlight(text, color=color_hl):
 
 
 def prompt_yes_no(text):
-    answer = input(f"{color_yellow}{text} (y/n) > {color_end}")
-    return "y" in answer.lower()
+    answer = input(f"{color_cyan}[y/n] {text} > {color_end}")
+    return answer.lower() in ["y", "yes"]
 
 
 def info(text, value=None):

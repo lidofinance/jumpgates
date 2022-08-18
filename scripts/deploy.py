@@ -1,88 +1,64 @@
 from brownie import network, accounts, Jumpgate
 import json
-from utils.env import get_env
+from utils.check import check_env_var
+import sys
 
 import utils.log as log
 from utils.config import (
     SOLANA_WORMHOLE_CHAIN_ID,
-    TERRA_WORMHOLE_CHAIN_ID,
 )
 from utils.encode import get_address_encoder
+from ..utils.network import is_development
 
 
-# environment
-WEB3_INFURA_PROJECT_ID = get_env("WEB3_INFURA_PROJECT_ID")
-ETHERSCAN_TOKEN = get_env("ETHERSCAN_TOKEN")
-
-# deploy parameters
-DEPLOYER = get_env("DEPLOYER")
-NETWORK = get_env("NETWORK")
-TOKEN = get_env("TOKEN")
-BRIDGE = get_env("BRIDGE")
-RECIPIENT_CHAIN = int(get_env("RECIPIENT_CHAIN"))
-RECIPIENT = get_env("RECIPIENT")
-ARBITER_FEE = get_env("ARBITER_FEE") or 0
-
-SUPPORTED_CHAINS = [TERRA_WORMHOLE_CHAIN_ID, SOLANA_WORMHOLE_CHAIN_ID]
+SUPPORTED_CHAINS = [SOLANA_WORMHOLE_CHAIN_ID]
 
 
 def main():
+
     log.info("Checking environment variables...")
 
-    if not WEB3_INFURA_PROJECT_ID:
-        log.error("`WEB3_INFURA_PROJECT_ID` not found!")
-        return
+    check_env_var("WEB3_INFURA_PROJECT_ID", display=False)
+    ETHERSCAN_TOKEN = check_env_var("ETHERSCAN_TOKEN", display=False)
 
-    # if not ETHERSCAN_TOKEN:
-    #     log.error("`ETHERSCAN_TOKEN` not found!")
-    #     return
+    publish_source = not is_development() and bool(ETHERSCAN_TOKEN)
 
-    log.okay("Environment variables are present!")
+    if not publish_source:
+        log.warn("Source code will not be verified on Etherscan!")
+
+        proceed = log.prompt_yes_no("Procced?")
+
+        if not proceed:
+            log.error("Script stopped!")
+            sys.exit()
 
     log.info("Checking deploy parameters...")
 
-    if not NETWORK:
-        log.error("`NETWORK` not found!")
-        return
-
-    if network.show_active() != NETWORK:
-        log.error(f"Wrong network! Expected `{NETWORK}` but got", network.show_active())
-        return
-
-    if not DEPLOYER:
-        log.error("`DEPLOYER` not found!")
-        return
+    DEPLOYER = check_env_var("DEPLOYER")
 
     try:
         deployer = accounts.load(DEPLOYER)
     except FileNotFoundError:
         log.error(f"Local account with id `{DEPLOYER}` not found!")
-        return
+        sys.exit()
 
-    if not TOKEN:
-        log.error("`TOKEN` not found!")
-        return
+    NETWORK = check_env_var("NETWORK")
 
-    if not BRIDGE:
-        log.error("`BRIDGE` not found!")
-        return
+    if network.show_active() != NETWORK:
+        log.error(f"Wrong network! Expected `{NETWORK}` but got", network.show_active())
+        sys.exit()
 
-    if not RECIPIENT_CHAIN:
-        log.error("`RECIPIENT_CHAIN` not found!")
-        return
-
-    if RECIPIENT_CHAIN not in SUPPORTED_CHAINS:
-        log.error("`RECIPIENT_CHAIN` not supported!")
-        return
-
-    if not RECIPIENT:
-        log.error("`RECIPIENT` not found!")
-        return
+    TOKEN = check_env_var("TOKEN")
+    BRIDGE = check_env_var("BRIDGE")
+    RECIPIENT_CHAIN = int(check_env_var("RECIPIENT_CHAIN"))
+    RECIPIENT = check_env_var("RECIPIENT")
+    ARBITER_FEE = int(check_env_var("ARBITER_FEE"))
 
     log.okay("Deploy parameters are present!")
 
-    log.info("NETWORK", NETWORK)
+    log.info("Here is the full deploy config:")
     log.info("DEPLOYER", deployer.address)
+    log.info("NETWORK", NETWORK)
     log.info("TOKEN", TOKEN)
     log.info("BRIDGE", BRIDGE)
     log.info("RECIPIENT_CHAIN", RECIPIENT_CHAIN)
@@ -93,7 +69,7 @@ def main():
 
     if not proceed:
         log.error("Script stopped!")
-        return
+        sys.exit()
 
     log.okay("Proceeding...")
 
@@ -115,12 +91,12 @@ def main():
         recipient,
         arbiterFee,
         {"from": deployer},
-        publish_source=bool(ETHERSCAN_TOKEN),
+        publish_source=publish_source,
     )
 
     log.okay("Jumpgate deployed successfully!")
 
-    deployed_filename = f"./deployed/{network.show_active()}-{RECIPIENT}.json"
+    deployed_filename = f"./deployed/{NETWORK}-{RECIPIENT}.json"
     with open(deployed_filename, "w") as outfile:
         json.dump(
             {
