@@ -1,5 +1,7 @@
-from brownie import network, accounts
-from scripts.deploy import DEPLOYER
+from brownie import network
+import sys
+
+from utils.check import check_deploy_param, check_env_var
 from utils.contract import (
     init_add_reward_program_evm_script_factory,
     init_bridge,
@@ -9,8 +11,6 @@ from utils.contract import (
     init_reward_programs_registry,
     init_top_up_reward_program_evm_script_factory,
 )
-from utils.env import get_env
-
 import utils.log as log
 from utils.config import (
     ADD_REWARD_PROGRAM_EVM_SCRIPT_FACTORY,
@@ -23,87 +23,48 @@ from utils.config import (
 from utils.encode import get_address_encoder
 from utils.simulate import simulate_full_flow
 
-# deploy essentials
-WEB3_INFURA_PROJECT_ID = get_env("WEB3_INFURA_PROJECT_ID")
-DEPLOYER = get_env("DEPLOYER")
-
-# deploy parameters
-JUMPGATE = get_env("JUMPGATE")
-TOKEN = get_env("TOKEN")
-BRIDGE = get_env("BRIDGE")
-RECIPIENT_CHAIN = int(get_env("RECIPIENT_CHAIN"))
-RECIPIENT = get_env("RECIPIENT")
-ARBITER_FEE = get_env("ARBITER_FEE")
-
 SUPPORTED_CHAINS = [TERRA_WORMHOLE_CHAIN_ID, SOLANA_WORMHOLE_CHAIN_ID]
 
 
 def main():
-    if network.show_active() not in ["mainnet-fork", "goerli-fork"]:
-        log.error(f"Wrong network!", network.show_active())
-        return
 
-    if not JUMPGATE:
-        log.error("`JUMPGATE` not found!")
-        return
+    log.info("Checking environment variables...")
 
-    if not WEB3_INFURA_PROJECT_ID:
-        log.error("`WEB3_INFURA_PROJECT_ID` not found!")
-        return
+    check_env_var("WEB3_INFURA_PROJECT_ID", display=False, prompt=False)
 
-    if not DEPLOYER:
-        log.error("`DEPLOYER` not found!")
-        return
+    NETWORK = check_env_var("NETWORK")
+    if network.show_active() != NETWORK:
+        log.error(f"Wrong network! Expected `{NETWORK}` but got", network.show_active())
+        sys.exit()
 
-    if not TOKEN:
-        log.error("`TOKEN` not found!")
-        return
+    log.info("Checking jumpgate...")
 
-    if not BRIDGE:
-        log.error("`BRIDGE` not found!")
-        return
-
-    if not RECIPIENT_CHAIN:
-        log.error("`RECIPIENT_CHAIN` not found!")
-        return
-
-    if RECIPIENT_CHAIN not in SUPPORTED_CHAINS:
-        log.error("`RECIPIENT_CHAIN` not supported!")
-        return
-
-    if not RECIPIENT:
-        log.error("`RECIPIENT` not found!")
-        return
-
-    deployer = accounts.load(DEPLOYER)
-
-    log.okay("All environment variables are present!")
-
-    log.info("Checking deploy parameters")
+    JUMPGATE = check_env_var("JUMPGATE", prompt=False)
+    OWNER = check_env_var("OWNER", prompt=False)
+    TOKEN = check_env_var("TOKEN", prompt=False)
+    BRIDGE = check_env_var("BRIDGE", prompt=False)
+    RECIPIENT_CHAIN = int(check_env_var("RECIPIENT_CHAIN", prompt=False))
+    RECIPIENT = check_env_var("RECIPIENT", prompt=False)
+    ARBITER_FEE = int(check_env_var("ARBITER_FEE", prompt=False))
 
     encode_address = get_address_encoder(RECIPIENT_CHAIN)
 
     jumpgate = init_jumpgate(JUMPGATE)
 
-    assert jumpgate.owner() == deployer.address
-    log.okay("Owner matches", deployer.address)
-
-    assert jumpgate.token() == TOKEN
-    log.okay("Token matches", TOKEN)
-
-    assert jumpgate.bridge() == BRIDGE
-    log.okay("Bridge matches", BRIDGE)
-
-    assert jumpgate.recipientChain() == RECIPIENT_CHAIN
-    log.okay("Recipient chain matches", RECIPIENT_CHAIN)
-
-    assert jumpgate.recipient() == encode_address(RECIPIENT)
-    log.okay("Recipient matches", RECIPIENT)
-
-    assert jumpgate.arbiterFee() == ARBITER_FEE
-    log.okay("Arbiter fee matches", ARBITER_FEE)
+    check_deploy_param("OWNER", OWNER, jumpgate.owner())
+    check_deploy_param("TOKEN", TOKEN, jumpgate.token())
+    check_deploy_param("BRIDGE", BRIDGE, jumpgate.bridge())
+    check_deploy_param("RECIPIENT_CHAIN", RECIPIENT_CHAIN, jumpgate.recipientChain())
+    check_deploy_param("RECIPIENT", encode_address(RECIPIENT), jumpgate.recipient())
+    check_deploy_param("ARBITER_FEE", ARBITER_FEE, jumpgate.arbiterFee())
 
     log.okay("Deploy parameters are correct!")
+
+    if "fork" not in NETWORK:
+        log.warn("Active network is not a fork, stopping the script.")
+        sys.exit()
+
+    log.inf("Simulating jumpgate flow with easy track...")
 
     token = init_erc20(TOKEN)
     easytrack = init_easytrack(EASYTRACK.get(network.chain.id))
@@ -128,8 +89,8 @@ def main():
         reward_programs_registry,
         add_reward_program_evm_script_factory,
         top_up_reward_program_evm_script_factory,
-        deployer,
-        0
+        OWNER,
+        0,
     )
 
     log.okay("Full flow simulated successfully!")
