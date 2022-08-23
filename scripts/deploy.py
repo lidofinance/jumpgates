@@ -103,6 +103,7 @@ def main():
         json.dump(
             {
                 "jumpgate": jumpgate.address,
+                "owner": OWNER,
                 "token": token,
                 "bridge": bridge,
                 "recipientChain": recipientChain,
