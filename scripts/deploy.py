@@ -42,12 +42,6 @@ def main():
         log.error(f"Local account with id `{DEPLOYER}` not found!")
         sys.exit()
 
-    NETWORK = check_env_var("NETWORK")
-
-    if network.show_active() != NETWORK:
-        log.error(f"Wrong network! Expected `{NETWORK}` but got", network.show_active())
-        sys.exit()
-
     OWNER = check_env_var("OWNER")
     TOKEN = check_env_var("TOKEN")
     BRIDGE = check_env_var("BRIDGE")
@@ -59,7 +53,7 @@ def main():
 
     log.info("Here is the full deploy config:")
     log.info("DEPLOYER", deployer.address)
-    log.info("NETWORK", NETWORK)
+    log.info("NETWORK", network.show_active())
     log.info("TOKEN", TOKEN)
     log.info("BRIDGE", BRIDGE)
     log.info("RECIPIENT_CHAIN", RECIPIENT_CHAIN)
@@ -98,10 +92,11 @@ def main():
 
     log.okay("Jumpgate deployed successfully!")
 
-    deployed_filename = f"./deployed/{NETWORK}-{RECIPIENT}.json"
+    deployed_filename = f"./deployed/{network.show_active()}-{RECIPIENT}.json"
     with open(deployed_filename, "w") as outfile:
         json.dump(
             {
+                "network": network.show_active(),
                 "jumpgate": jumpgate.address,
                 "owner": OWNER,
                 "token": token,
