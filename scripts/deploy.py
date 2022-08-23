@@ -108,6 +108,7 @@ def main():
                 "bridge": bridge,
                 "recipientChain": recipientChain,
                 "recipient": RECIPIENT,
+                "recipientEncoded": recipient,
                 "arbiterFee": arbiterFee,
             },
             outfile,
