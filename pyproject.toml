@@ -6,7 +6,6 @@ authors = ["Azat Serikov <azatsdev@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = ">=3.8,<3.10"
-bech32 = "1.2.0"
 eth-abi = "2.1.1"
 eth-utils = "1.10.0"
 pytest = "6.2.5"

@@ -17,13 +17,12 @@ from utils.config import (
     EASYTRACK,
     REWARD_PROGRAMS_REGISTRY,
     SOLANA_WORMHOLE_CHAIN_ID,
-    TERRA_WORMHOLE_CHAIN_ID,
     TOP_UP_REWARD_PROGRAM_EVM_SCRIPT_FACTORY,
 )
 from utils.encode import get_address_encoder
 from utils.simulate import simulate_full_flow
 
-SUPPORTED_CHAINS = [TERRA_WORMHOLE_CHAIN_ID, SOLANA_WORMHOLE_CHAIN_ID]
+SUPPORTED_CHAINS = [SOLANA_WORMHOLE_CHAIN_ID]
 
 
 def main():

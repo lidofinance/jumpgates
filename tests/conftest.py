@@ -19,8 +19,6 @@ from utils.config import (
     REWARD_PROGRAMS_REGISTRY,
     SOLANA_RANDOM_ADDRESS,
     SOLANA_WORMHOLE_CHAIN_ID,
-    TERRA_RANDOM_ADDRESS,
-    TERRA_WORMHOLE_CHAIN_ID,
     TETHER,
     TOP_UP_REWARD_PROGRAM_EVM_SCRIPT_FACTORY,
     WORMHOLE_TOKEN_BRIDGE_ADDRESS,
@@ -33,7 +31,7 @@ from utils.contract import (
     init_tether,
     init_top_up_reward_program_evm_script_factory,
 )
-from utils.encode import encode_terra_address
+from utils.encode import encode_solana_address
 
 
 @pytest.fixture(autouse=True)
@@ -75,7 +73,6 @@ def sender(request):
 
 @pytest.fixture(
     params=[
-        (TERRA_WORMHOLE_CHAIN_ID, TERRA_RANDOM_ADDRESS),
         (SOLANA_WORMHOLE_CHAIN_ID, SOLANA_RANDOM_ADDRESS),
     ]
 )
@@ -126,7 +123,7 @@ def max_bridging_amount():
 def amount_exceeding_cap(token):
     decimals = token.decimals()
     bridgeable_max = get_bridgeable_amount(BRIDGING_CAP, decimals)
-    overspill = 10 ** decimals
+    overspill = 10**decimals
     return bridgeable_max + overspill
 
 
@@ -200,8 +197,8 @@ def jumpgate(owner, token, bridge):
         owner.address,
         token.address,
         bridge.address,
-        TERRA_WORMHOLE_CHAIN_ID,
-        encode_terra_address(TERRA_RANDOM_ADDRESS),
+        SOLANA_WORMHOLE_CHAIN_ID,
+        encode_solana_address(SOLANA_RANDOM_ADDRESS),
         0,
         {"from": owner},
     )
@@ -221,13 +218,13 @@ def ldo(chain):
 
 
 @pytest.fixture()
-def ldo_jumpgate(owner, ldo, bridge, chain):
+def ldo_jumpgate(owner, ldo, bridge):
     return Jumpgate.deploy(
         owner.address,
         ldo.address,
         bridge.address,
-        TERRA_WORMHOLE_CHAIN_ID,
-        encode_terra_address(TERRA_RANDOM_ADDRESS),
+        SOLANA_WORMHOLE_CHAIN_ID,
+        encode_solana_address(SOLANA_RANDOM_ADDRESS),
         0,
         {"from": owner},
     )
@@ -281,7 +278,7 @@ def smallest_tether_amount():
 @pytest.fixture
 def one_tether(tether):
     decimals = tether.decimals()
-    return 10 ** decimals
+    return 10**decimals
 
 
 @pytest.fixture(

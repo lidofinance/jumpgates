@@ -103,7 +103,7 @@ You can do this by copying the contents of `sample.env` into `.env` and filling 
 - `NETWORK` - name of the network you want to deploy a jumpgate to, e.g., `mainnet`, `goerli`, `ropsten`, etc.;
 - `TOKEN` - address of the ERC20 token you want to transfer;
 - `BRIDGE` - address of the Wormhole Token Bridge;
-- `RECIPIENT_CHAIN` - Wormhole id of the target chain, e.g. `1` for Solana, `3` for Terra;
+- `RECIPIENT_CHAIN` - Wormhole id of the target chain, e.g. `1` for Solana;
 - `RECIPIENT` - address of the recipient;
 - `ARBITER_FEE` - bridge arbiter fee, defaults to 0.
 

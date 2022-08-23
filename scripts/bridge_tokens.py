@@ -6,11 +6,10 @@ from utils.env import get_env
 import utils.log as log
 from utils.config import (
     SOLANA_WORMHOLE_CHAIN_ID,
-    TERRA_WORMHOLE_CHAIN_ID,
 )
 
 NETWORK = get_env("NETWORK")
-SUPPORTED_CHAINS = [TERRA_WORMHOLE_CHAIN_ID, SOLANA_WORMHOLE_CHAIN_ID]
+SUPPORTED_CHAINS = [SOLANA_WORMHOLE_CHAIN_ID]
 
 # deploy essentials
 WEB3_INFURA_PROJECT_ID = get_env("WEB3_INFURA_PROJECT_ID")
