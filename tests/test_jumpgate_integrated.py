@@ -47,9 +47,7 @@ def test_recover_erc20_with_nonstandard_decimals(
     tx = jumpgate.recoverERC20(
         tether.address, recipient.address, tether_amount, {"from": owner}
     )
-    assert (
-        tether.balanceOf(recipient.address) == recipient_balance_before + tether_amount,
-    )
+    assert tether.balanceOf(recipient.address) == recipient_balance_before + tether_amount
     assert tether.balanceOf(jumpgate.address) == jumpgate_balance_before - tether_amount
 
     assert "ERC20Recovered" in tx.events
