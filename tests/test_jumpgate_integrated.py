@@ -44,10 +44,11 @@ def test_recover_erc20_with_nonstandard_decimals(
     recipient_balance_before = tether.balanceOf(recipient.address)
     jumpgate_balance_before = tether.balanceOf(jumpgate.address)
 
-    tx = jumpgate.recoverERC20(tether.address, recipient.address, tether_amount)
+    tx = jumpgate.recoverERC20(
+        tether.address, recipient.address, tether_amount, {"from": owner}
+    )
     assert (
         tether.balanceOf(recipient.address) == recipient_balance_before + tether_amount,
-        {"from": owner},
     )
     assert tether.balanceOf(jumpgate.address) == jumpgate_balance_before - tether_amount
 
