@@ -35,7 +35,7 @@ def mask(text):
 
 def check_deploy_param(variable, env_value, onchain_value):
     log.info(f"Checking {variable}...")
-    log.info("ENV", env_value)
+    log.info("ENV____", env_value)
     log.info("ONCHAIN", onchain_value)
     assert env_value == onchain_value
     log.okay(f"{variable} matches!")
