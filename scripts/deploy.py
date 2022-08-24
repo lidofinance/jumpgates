@@ -54,6 +54,7 @@ def main():
     log.info("Here is the full deploy config:")
     log.info("DEPLOYER", deployer.address)
     log.info("NETWORK", network.show_active())
+    log.info("OWNER", OWNER)
     log.info("TOKEN", TOKEN)
     log.info("BRIDGE", BRIDGE)
     log.info("RECIPIENT_CHAIN", RECIPIENT_CHAIN)
