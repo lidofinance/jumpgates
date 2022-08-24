@@ -51,6 +51,9 @@ def main():
 
     log.okay("Deploy parameters are present!")
 
+    encode_address = get_address_encoder(RECIPIENT_CHAIN)
+    recipient = encode_address(RECIPIENT)
+
     log.info("Here is the full deploy config:")
     log.info("DEPLOYER", deployer.address)
     log.info("NETWORK", network.show_active())
@@ -59,6 +62,7 @@ def main():
     log.info("BRIDGE", BRIDGE)
     log.info("RECIPIENT_CHAIN", RECIPIENT_CHAIN)
     log.info("RECIPIENT", RECIPIENT)
+    log.info("RECIPIENT encoded", recipient)
     log.info("ARBITER_FEE", ARBITER_FEE)
 
     proceed = log.prompt_yes_no("Proceed?")
@@ -77,7 +81,6 @@ def main():
     token = TOKEN
     bridge = BRIDGE
     recipientChain = RECIPIENT_CHAIN
-    recipient = encode_address(RECIPIENT)
     arbiterFee = ARBITER_FEE
 
     jumpgate = Jumpgate.deploy(
