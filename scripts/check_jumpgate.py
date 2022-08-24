@@ -31,11 +31,6 @@ def main():
 
     check_env_var("WEB3_INFURA_PROJECT_ID", display=False, prompt=False)
 
-    NETWORK = check_env_var("NETWORK")
-    if network.show_active() != NETWORK:
-        log.error(f"Wrong network! Expected `{NETWORK}` but got", network.show_active())
-        sys.exit()
-
     log.info("Checking jumpgate...")
 
     JUMPGATE = check_env_var("JUMPGATE", prompt=False)
@@ -59,11 +54,11 @@ def main():
 
     log.okay("Deploy parameters are correct!")
 
-    if "fork" not in NETWORK:
+    if "fork" not in network.show_active():
         log.warn("Active network is not a fork, stopping the script.")
         sys.exit()
 
-    log.inf("Simulating jumpgate flow with easy track...")
+    log.info("Simulating jumpgate flow with easy track...")
 
     token = init_erc20(TOKEN)
     easytrack = init_easytrack(EASYTRACK.get(network.chain.id))
