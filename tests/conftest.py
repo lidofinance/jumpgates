@@ -115,16 +115,20 @@ def amount_with_trailing_nonzero_decimals(
 
 
 @pytest.fixture
-def max_bridging_amount():
-    return BRIDGING_CAP
+def max_bridging_amount(token):
+    if token.decimals() > BRIDGE_DUST_CUTOFF_DECIMALS:
+        return (BRIDGING_CAP - 1) * 10 ** (token.decimals() - BRIDGE_DUST_CUTOFF_DECIMALS)
+    else:
+        return BRIDGING_CAP - 1
 
 
 @pytest.fixture
 def amount_exceeding_cap(token):
-    decimals = token.decimals()
-    bridgeable_max = get_bridgeable_amount(BRIDGING_CAP, decimals)
-    overspill = 10**decimals
-    return bridgeable_max + overspill
+    if token.decimals() > BRIDGE_DUST_CUTOFF_DECIMALS:
+        return BRIDGING_CAP * 10 ** (token.decimals() - BRIDGE_DUST_CUTOFF_DECIMALS)
+    else:
+        return BRIDGING_CAP
+
 
 
 @pytest.fixture(
@@ -136,6 +140,7 @@ def amount_exceeding_cap(token):
         "human_denomination_amount",
         "amount_with_trailing_nonzero_decimals",
         "amount_exceeding_cap",
+        "max_bridging_amount"
     ],
 )
 def send_amount(request):
