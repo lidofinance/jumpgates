@@ -1,0 +1,11 @@
+{
+    "network": "mainnet",
+    "jumpgate": "0xe3224542066D3bbc02Bc3d70B641bE4Bc6F40E36",
+    "owner": "0x3e40D73EB977Dc6a537aF587D48316feE66E9C8c",
+    "token": "0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32",
+    "bridge": "0x3ee18B2214AFF97000D974cf647E7C347E8fa585",
+    "recipientChain": 1,
+    "recipient": "H6Q8UwkZ7G6qmBv4Nke7BtzbHrfZNvFhdQPCmUUHtTy2",
+    "recipientEncoded": "0xef1d0c0212f591b7ab4be3561fa3c05ef83a6c25bef95588a443ea3bd64fcaf1",
+    "arbiterFee": 0
+}
