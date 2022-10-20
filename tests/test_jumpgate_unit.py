@@ -288,7 +288,6 @@ def test_bridge_tokens(
         assert tx.events["LogMessagePublished"]["sender"] == bridge.address
         assert tx.events["LogMessagePublished"]["sequence"] >= 0
         assert tx.events["LogMessagePublished"]["nonce"] == 0
-        assert tx.events["LogMessagePublished"]["consistencyLevel"] == 15
 
         assert "TokensBridged" in tx.events
         assert tx.events["TokensBridged"]["_token"] == token.address

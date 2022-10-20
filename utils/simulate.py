@@ -100,7 +100,6 @@ def simulate_full_flow(
     assert events["LogMessagePublished"]["sender"] == bridge.address
     assert events["LogMessagePublished"]["sequence"] >= 0
     assert events["LogMessagePublished"]["nonce"] == 0
-    assert events["LogMessagePublished"]["consistencyLevel"] == 15
 
     assert "TokensBridged" in events
     assert events["TokensBridged"]["_token"] == token.address
