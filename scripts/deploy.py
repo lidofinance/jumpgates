@@ -101,7 +101,7 @@ def main():
         json.dump(
             {
                 "network": network.show_active(),
-                "jumpgate": jumpgate.address,
+                "jumpgate": jumpgate,
                 "owner": OWNER,
                 "token": token,
                 "bridge": bridge,
