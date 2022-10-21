@@ -100,7 +100,7 @@ You can add a local account either from a private key or a keystore. If you do n
 You can do this by copying the contents of `sample.env` into `.env` and filling it out. The necessary variables are listed below,
 
 - `DEPLOYER` - your local account id;
-- `NETWORK` - name of the network you want to deploy a jumpgate to, e.g., `mainnet`, `goerli`, `ropsten`, etc.;
+- `OWNER` - admin of the jumpgate;
 - `TOKEN` - address of the ERC20 token you want to transfer;
 - `BRIDGE` - address of the Wormhole Token Bridge;
 - `RECIPIENT_CHAIN` - Wormhole id of the target chain, e.g. `1` for Solana;
